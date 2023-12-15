@@ -93,7 +93,8 @@ def update_maven(server=None, basepath=None, local=None, test=False):
 
     if server is None:
         server = "https://naif.jpl.nasa.gov"
-    # https://naif.jpl.nasa.gov/pub/naif/pds/pds4/maven/maven_spice/spice_kernels/
+    # https://naif.jpl.nasa.gov/pub/naif/pds/
+    #        pds4/maven/maven_spice/spice_kernels/
     if basepath is None:
         basepath = "/pub/naif/pds/pds4/maven/maven_spice"
 

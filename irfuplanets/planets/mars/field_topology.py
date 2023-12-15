@@ -3,18 +3,12 @@ Code for plotting / interpolating the field topology Maps made by Brain, 07.
 Brain is sensible, uses East Longitudes :)
 """
 
-try:
-    from scipy.io.idl import readsav
-except ImportError:
-    import idlsave
-
-    readsav = idlsave.read
-
 import os
 
 import celsius
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.io.idl import readsav
 
 ALL_DESCRIPTIONS = [
     "num_pads_night",

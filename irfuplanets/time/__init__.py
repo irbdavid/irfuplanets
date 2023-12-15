@@ -17,7 +17,11 @@ from irfuplanets.time.time import (
     utcstr,
     utcstr_to_spiceet,
 )
-from irfuplanets.time.time_axes import SpiceetFormatter, SpiceetLocator, setup_time_axis
+from irfuplanets.time.time_axes import (
+    SpiceetFormatter,
+    SpiceetLocator,
+    setup_time_axis,
+)
 
 __author__ = "David Andrews"
 __copyright__ = "Copyright 2023, David Andrews"
