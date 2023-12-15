@@ -461,7 +461,7 @@ class OrbitDict(dict):
     spiceet, returning the orbit which contains that time.
 
     Example:
-        t = celsius.spiceet("2015-01-01T00:00")
+        t = spiceet("2015-01-01T00:00")
         o = maven.orbits[t]
         print(o)"""
 

@@ -1590,8 +1590,11 @@ def stacked_f_plots(
     start=7894,
     finish=None,
     show=True,
-    frequencies=[0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 2.0, 3.0],
+    frequencies=None,
 ):
+    if frequencies is None:
+        frequencies = [0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 2.0, 3.0]
+
     gc.enable()
     if finish is None:
         finish = start + 1
@@ -1696,7 +1699,10 @@ def ao_plot(o):
     a.modb_along_orbit(ax[1], vmax=100.0)
 
 
-def mainloop(orbits=list(range(7890, 8200)), show=False):
+def mainloop(orbits=None, show=False):
+    if orbits is None:
+        orbits = list(range(7890, 8200))
+
     import gc
 
     gc.enable()

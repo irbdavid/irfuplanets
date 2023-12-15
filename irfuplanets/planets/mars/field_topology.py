@@ -5,10 +5,11 @@ Brain is sensible, uses East Longitudes :)
 
 import os
 
-import celsius
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.io.idl import readsav
+
+from irfuplanets.plot import CircularLocator, make_colorbar_cax
 
 ALL_DESCRIPTIONS = [
     "num_pads_night",
@@ -111,15 +112,15 @@ def plot_field_topology(
         plt.ylim(-90.0, 90)
 
     if circ_axis:
-        ax.xaxis.set_major_locator(celsius.CircularLocator())
-        ax.yaxis.set_major_locator(celsius.CircularLocator())
+        ax.xaxis.set_major_locator(CircularLocator())
+        ax.yaxis.set_major_locator(CircularLocator())
 
     if labels:
         plt.ylabel("Latitude / deg")
         plt.xlabel("Longitude / deg")
 
     if colorbar:
-        c = plt.colorbar(cax=celsius.make_colorbar_cax())
+        c = plt.colorbar(cax=make_colorbar_cax())
         if labels:
             c.set_label(description.replace("_", " "))
 

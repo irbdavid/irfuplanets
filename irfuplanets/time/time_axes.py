@@ -30,7 +30,11 @@ MONTHS = [
 
 
 def setup_time_axis(
-    ax=None, xaxis=True, verbose=False, locator_kwargs={}, formatter_kwargs={}
+    ax=None,
+    xaxis=True,
+    verbose=False,
+    locator_kwargs=None,
+    formatter_kwargs=None,
 ):
     """Function that applies SPICEET based axis locator and labeller to the
     current plot axis (default xaxis).
@@ -587,11 +591,11 @@ if __name__ == "__main__":
         # ax2.xaxis.set_major_locator(l2)
         # ax2.xaxis.set_major_formatter(f2)
 
-        # l = celsius.SpiceetCalendarLocator()
+        # l = SpiceetCalendarLocator()
         #
         # if e > 86400. * 100.:
-        #     l = celsius.SpiceetYearLocator()
-        # f = celsius.SpiceetFormatter(calendar=True)
+        #     l = SpiceetYearLocator()
+        # f = SpiceetFormatter(calendar=True)
         # ax2.xaxis.set_major_locator(l)
         # ax2.xaxis.set_major_formatter(f)
 

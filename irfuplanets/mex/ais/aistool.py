@@ -1075,7 +1075,7 @@ class AISTool(object):
             self.current_ionogram._fp_data * (self.vmax - self.vmin)
             + self.vmin
         )
-        # d = celsius.remove_none_edge_intersecting(
+        # d = remove_none_edge_intersecting(
         #           self.current_ionogram._fp_data, 2)
         # self.current_ionogram.data = 10.** (
         #           d * (self.vmax-self.vmin) + self.vmin)

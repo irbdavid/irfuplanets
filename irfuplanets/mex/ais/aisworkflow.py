@@ -5,7 +5,6 @@ import os
 import sys
 import time as py_time
 
-import celsius
 import matplotlib
 import mex
 import mex.ais
@@ -13,6 +12,7 @@ import numpy as np
 
 import irfuplanets
 from irfuplanets.mex.ais.aisreview import main
+from irfuplanets.time import now
 
 matplotlib.use("Agg")
 print("MPL Backend: ", matplotlib.get_backend())
@@ -150,10 +150,10 @@ class DeltaTimer(object):
 
     def __init__(self):
         super(DeltaTimer, self).__init__()
-        self._t = celsius.now()
+        self._t = now()
 
     def __call__(self, s):
-        n = celsius.now()
+        n = now()
         print(s + ": %0.3fs" % (n - self._t))
         self._t = n
 
@@ -162,14 +162,14 @@ if __name__ == "__main__":
     verbose = False
     save_every = 1
     np.seterr(all="ignore")
-    t0 = celsius.now()
+    t0 = now()
     exception_list = {}
     repeat = True
 
     start = determine_last_processed_orbit() - 50
     # start = 1840
     start = 17000
-    finish = mex.orbits[celsius.now()].number - 10
+    finish = mex.orbits[now()].number - 10
 
     if len(sys.argv) > 1:
         start = int(sys.argv[1])
@@ -227,10 +227,10 @@ if __name__ == "__main__":
     # print r[0].get()`
 
     print("\n" * 5)
-    print("Total Duration: %f h" % ((celsius.now() - t0) / 3600.0))
+    print("Total Duration: %f h" % ((now() - t0) / 3600.0))
     # print "Exceptions encountered:"
     # for k, v in exception_list.iter_items():
-    #     print '%s: %s' % (celsius.utcstr(k), str(v))
+    #     print '%s: %s' % (utcstr(k), str(v))
 
     if not runner == junk:
         mex.ais.ais_code._generate_ais_coverage()

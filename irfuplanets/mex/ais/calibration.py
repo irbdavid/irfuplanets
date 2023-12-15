@@ -217,7 +217,7 @@ if __name__ == "__main__":
     c2.plot()
 
     # plt.close('all')
-    # plt.figure(figsize=reversed(celsius.paper_sizes['A4']))
+    # plt.figure(figsize=reversed(paper_sizes['A4']))
     # for o in c.orbits:
     #     a = mex.ais.aisreview.AISReview(o)
     #     a.plot_ne()
