@@ -28,7 +28,9 @@ def schmidt_polynomials(x, nmax):
     if nmax > 0:
         twoago = 0.0
         for i in range(1, nmax + 1):
-            arr[i, 0] = (x * (2.0 * i - 1.0) * arr[i - 1, 0] - (i - 1.0) * twoago) / i
+            arr[i, 0] = (
+                x * (2.0 * i - 1.0) * arr[i - 1, 0] - (i - 1.0) * twoago
+            ) / i
             twoago = arr[i - 1, 0]
 
     cm = 2.0**0.5
@@ -219,7 +221,9 @@ class SphericalHarmonicModel(FieldModel):
         dtheta[1, 0] = dtheta[1, 0] - theta[1, 1]
         for n in range(2, nmax + 1):
             dtheta[n, :] = cntarr * cos_theta / sin_theta * theta[n, :]
-            dtheta[n, 0] = dtheta[n, 0] - np.sqrt(n * (n + 1.0) * 0.5) * theta[n, 1]
+            dtheta[n, 0] = (
+                dtheta[n, 0] - np.sqrt(n * (n + 1.0) * 0.5) * theta[n, 1]
+            )
             # careful - slices behave differently in np
             dtheta[n, 1 : n + 1] = dtheta[n, 1 : n + 1] - (
                 np.sqrt((n - cntarr[1 : n + 1]) * (n + cntarr[1 : n + 1] + 1))
@@ -342,7 +346,8 @@ class LillisMarsFieldModel(SphericalHarmonicModel):
         super(LillisMarsFieldModel, self).__init__("MARS", "Lillis (2010)")
         if coefficients_file is None:
             coefficients_file = (
-                irfuplanets.config["mex"]["data_directory"] + "lillis_coefs.txt"
+                irfuplanets.config["mex"]["data_directory"]
+                + "lillis_coefs.txt"
             )
 
         self.coefficients_file = coefficients_file
@@ -374,12 +379,15 @@ class MorschhauserMarsFieldModel(SphericalHarmonicModel):
     def __init__(self, coefficients_file=None, nmax=110):
         import irfuplanets
 
-        super(MorschhauserMarsFieldModel, self).__init__("MARS", "Morschhauser (2014)")
+        super(MorschhauserMarsFieldModel, self).__init__(
+            "MARS", "Morschhauser (2014)"
+        )
 
         # raise RuntimeError()
         if coefficients_file is None:
             coefficients_file = (
-                irfuplanets.config["mex"]["data_directory"] + "morschhauser_coeffs.txt"
+                irfuplanets.config["mex"]["data_directory"]
+                + "morschhauser_coeffs.txt"
             )
 
         self.coefficients_file = coefficients_file
@@ -506,7 +514,11 @@ def create_snapshot(model, filename=None, resolution=1.0, altitude=150.0):
     latitude = np.arange(90, -90, resolution * -1.0)
     longitude = np.arange(0, 360, resolution)
     lat_mesh, lon_mesh = np.meshgrid(latitude, longitude)
-    r = np.zeros_like(lat_mesh.flatten()) + constants.mars_mean_radius_km + altitude
+    r = (
+        np.zeros_like(lat_mesh.flatten())
+        + constants.mars_mean_radius_km
+        + altitude
+    )
     print("Calculating %d points..." % r.shape[0])
     field = model(np.vstack((r, lat_mesh.flatten(), lon_mesh.flatten())))
 
@@ -709,9 +721,13 @@ def plot_lat_lon_field(
     if full_range:
         q2 = np.hstack((q, q, q))
         extent2 = (-360, 720.0, -90, 90)
-        out = plt.imshow(q2, vmin=vmin, vmax=vmax, cmap=cmap, extent=extent2, **kwargs)
+        out = plt.imshow(
+            q2, vmin=vmin, vmax=vmax, cmap=cmap, extent=extent2, **kwargs
+        )
     else:
-        out = plt.imshow(q, vmin=vmin, vmax=vmax, cmap=cmap, extent=extent, **kwargs)
+        out = plt.imshow(
+            q, vmin=vmin, vmax=vmax, cmap=cmap, extent=extent, **kwargs
+        )
 
     if labels:
         plt.xlabel("Longitude / deg")
@@ -763,7 +779,9 @@ if __name__ == "__main__":
             if alt < 10.0:
                 alt = 10.0
             fname = name % alt
-            fname = os.path.expanduser("~/data/mex/saved_field_models/") + fname
+            fname = (
+                os.path.expanduser("~/data/mex/saved_field_models/") + fname
+            )
             create_snapshot(model, fname, resolution=1.0, altitude=alt)
 
     if False:
@@ -783,7 +801,9 @@ if __name__ == "__main__":
         fig = plt.figure(figsize=(8, 6))
 
         orb = mex.orbits[10470]
-        et = np.linspace(orb.periapsis - 3600.0, orb.periapsis + 3600.0, 1000.0)
+        et = np.linspace(
+            orb.periapsis - 3600.0, orb.periapsis + 3600.0, 1000.0
+        )
 
         # Duru 06a
         if comparison == "Duru":
@@ -806,7 +826,11 @@ if __name__ == "__main__":
         # pos[0,:] = p[0,:]
 
         if comparison == "Duru":
-            pos[0, :] = np.zeros_like(pos[0, :]) + constants.mars_mean_radius_km + 150.0
+            pos[0, :] = (
+                np.zeros_like(pos[0, :])
+                + constants.mars_mean_radius_km
+                + 150.0
+            )
 
         field = a(pos)
         print(field)
@@ -839,7 +863,11 @@ if __name__ == "__main__":
         lt = np.arange(90, -90, -1.0)
         ln = np.arange(0, 360, 1.0)
         lat, lon = np.meshgrid(lt, ln)
-        r = np.zeros_like(lat.flatten()) + constants.mars_mean_radius_km + 150.0
+        r = (
+            np.zeros_like(lat.flatten())
+            + constants.mars_mean_radius_km
+            + 150.0
+        )
 
         print(lat.shape)
         print(lon.shape)
@@ -852,7 +880,9 @@ if __name__ == "__main__":
         )
         inx = abs_field < 100.0
         theta = np.rad2deg(
-            np.arctan2(field[0, :], np.sqrt(field[1, :] ** 2.0 + field[2, :] ** 2.0))
+            np.arctan2(
+                field[0, :], np.sqrt(field[1, :] ** 2.0 + field[2, :] ** 2.0)
+            )
         )
         theta = np.abs(theta)
         theta[inx] = -99.0

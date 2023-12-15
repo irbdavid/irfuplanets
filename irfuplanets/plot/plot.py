@@ -283,7 +283,9 @@ class CircularLocator(mpl.ticker.Locator):
 
     def __call__(self):
         vmin, vmax = self.axis.get_view_interval()
-        vmin, vmax = matplotlib.transforms.nonsingular(vmin, vmax, expander=1.0)
+        vmin, vmax = matplotlib.transforms.nonsingular(
+            vmin, vmax, expander=1.0
+        )
 
         locs = self.bin_boundaries(vmin, vmax)
 
@@ -335,7 +337,9 @@ def boxplot(
     ymax = np.amax(yy)
 
     lines = []
-    lines.extend(plt.plot((x0, x0), (ylow, ymin), color=color, lw=_lw, *args, **kwargs))
+    lines.extend(
+        plt.plot((x0, x0), (ylow, ymin), color=color, lw=_lw, *args, **kwargs)
+    )
     lines.extend(
         plt.plot((x0, x0), (yhigh, ymax), color=color, lw=_lw, *args, **kwargs)
     )
@@ -395,9 +399,15 @@ def map_along_line(
             new_timebase = np.arange(time[0], time[-1], np.min(np.diff(time)))
 
         # Bit redundant
-        x = interp_safe(new_timebase, time, x, max_step=max_step, missing=missing)
-        y = interp_safe(new_timebase, time, y, max_step=max_step, missing=missing)
-        q = interp_safe(new_timebase, time, q, max_step=max_step, missing=missing)
+        x = interp_safe(
+            new_timebase, time, x, max_step=max_step, missing=missing
+        )
+        y = interp_safe(
+            new_timebase, time, y, max_step=max_step, missing=missing
+        )
+        q = interp_safe(
+            new_timebase, time, q, max_step=max_step, missing=missing
+        )
 
     points = np.array([x, y]).T.reshape(-1, 1, 2)
     segments = np.concatenate([points[:-1], points[1:]], axis=1)
@@ -447,9 +457,13 @@ def add_labelled_bar(
 
     p = ax.get_position()
     if top:
-        new_ax = fig.add_axes([p.x0, p.y1 + offset, p.x1 - p.x0, height], yticks=[])
+        new_ax = fig.add_axes(
+            [p.x0, p.y1 + offset, p.x1 - p.x0, height], yticks=[]
+        )
     else:
-        new_ax = fig.add_axes([p.x0, p.y0 - offset, p.x1 - p.x0, -height], yticks=[])
+        new_ax = fig.add_axes(
+            [p.x0, p.y0 - offset, p.x1 - p.x0, -height], yticks=[]
+        )
 
     plt.sca(new_ax)
     plt.xlim(ax.get_xlim())
@@ -474,7 +488,9 @@ def add_labelled_bar(
             comp = _q > v
             for i in range(0, _q.shape[0] - 1):
                 if comp[i] != comp[i + 1]:
-                    new_ticklocs.append(np.interp(v, _q[[i, i + 1]], _time[[i, i + 1]]))
+                    new_ticklocs.append(
+                        np.interp(v, _q[[i, i + 1]], _time[[i, i + 1]])
+                    )
                     new_ticknames.append(formatter(v))
         new_ax.set_xticks(new_ticklocs)
         new_ax.set_xticklabels(new_ticknames)

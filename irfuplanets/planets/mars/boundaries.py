@@ -149,7 +149,9 @@ class SegmentedMSphere(object):
         img[(xx > 0.0) & (rr < ion_alt)] = self.map["NIGHTSIDE_IONOSPHERE"]
 
         # Terminator ionosphere (approx?)
-        img[(np.abs(xx) < 0.2) & (rr < ion_alt)] = self.map["TERMINATOR_IONOSPHERE"]
+        img[(np.abs(xx) < 0.2) & (rr < ion_alt)] = self.map[
+            "TERMINATOR_IONOSPHERE"
+        ]
 
         self.img = img
         self.xx = xx
@@ -227,7 +229,12 @@ class SegmentedMSphere(object):
         yinx = np.interp(y, self.y, self.ny).astype(np.int32)
 
         out = np.zeros_like(x) - 1
-        good = (xinx > 0) & (xinx < self.nx[-1]) & (yinx > 0) & (yinx < self.ny[-1])
+        good = (
+            (xinx > 0)
+            & (xinx < self.nx[-1])
+            & (yinx > 0)
+            & (yinx < self.ny[-1])
+        )
 
         out[good] = self.img[yinx[good], xinx[good]]
         return out

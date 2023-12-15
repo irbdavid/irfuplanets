@@ -56,7 +56,8 @@ def load_static_l2(
     while t < finish:
         files.extend(
             http_manager.query(
-                "sta/l2/%04d/%02d/mvn_sta_l2_%s_*_v*_r*.cdf" % (year, month, full_kind),
+                "sta/l2/%04d/%02d/mvn_sta_l2_%s_*_v*_r*.cdf"
+                % (year, month, full_kind),
                 start=start,
                 finish=finish,
                 version_function=lambda x: (
@@ -76,7 +77,9 @@ def load_static_l2(
 
     # Check for duplicates:
     if len(files) != len(set(files)):
-        raise ValueError("Duplicates appeared in files to load: " + ", ".join(files))
+        raise ValueError(
+            "Duplicates appeared in files to load: " + ", ".join(files)
+        )
 
     if cleanup:
         print("static L2 Cleanup complete")

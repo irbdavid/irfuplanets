@@ -92,7 +92,9 @@ class SpiceManager(object):
                 print("Updating local directory to " + self.local_directory)
 
         if not os.path.exists(self.local_directory):
-            raise IOError("Local directory %s does not exist" % self.local_directory)
+            raise IOError(
+                "Local directory %s does not exist" % self.local_directory
+            )
 
     def update(self, dry_run=False):
         if not self.config:

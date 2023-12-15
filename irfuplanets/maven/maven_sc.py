@@ -6,7 +6,14 @@ import numpy as np
 import spiceypy
 
 import irfuplanets
-from irfuplanets.time import Orbit, OrbitDict, now, setup_time_axis, spiceet, utcstr
+from irfuplanets.time import (
+    Orbit,
+    OrbitDict,
+    now,
+    setup_time_axis,
+    spiceet,
+    utcstr,
+)
 
 __author__ = "David Andrews"
 __copyright__ = "Copyright 2023, David Andrews"
@@ -48,7 +55,9 @@ def load_kernels(
     time=None, force=False, verbose=False, load_all=False, keep_previous=False
 ):
     """Load spice kernels, with a stateful thing to prevent multiple calls"""
-    last_spice_time_window = getattr(spiceypy, "last_spice_time_window", "MVN:NONE")
+    last_spice_time_window = getattr(
+        spiceypy, "last_spice_time_window", "MVN:NONE"
+    )
 
     if load_all:
         # Launch to now + 10 yrs
@@ -164,7 +173,9 @@ def load_kernels(
         raise
 
     if verbose:
-        print("LOAD_KERNELS [MVN]: Loaded %s" % spiceypy.last_spice_time_window)
+        print(
+            "LOAD_KERNELS [MVN]: Loaded %s" % spiceypy.last_spice_time_window
+        )
 
 
 def unload_kernels():
@@ -319,7 +330,9 @@ def mso_r_lat_lon_position(time, mso=False, sza=False, **kwargs):
 
     if sza:
         pos = position(time, frame="MAVEN_MSO", **kwargs)
-        sza = np.rad2deg(np.arctan2(np.sqrt(pos[1] ** 2 + pos[2] ** 2), pos[0]))
+        sza = np.rad2deg(
+            np.arctan2(np.sqrt(pos[1] ** 2 + pos[2] ** 2), pos[0])
+        )
         if isinstance(sza, np.ndarray):
             inx = sza < 0.0
             if np.any(inx):
@@ -411,7 +424,10 @@ def read_maven_orbits(fname, verbose=False):
     for line in f.readlines():
         if "Unable to determine" in line:
             if verbose:
-                print("Detected 'Unable to determine'" " (last orbit bounds error?)")
+                print(
+                    "Detected 'Unable to determine'"
+                    " (last orbit bounds error?)"
+                )
             continue
 
         try:
@@ -420,7 +436,9 @@ def read_maven_orbits(fname, verbose=False):
             periapsis = spiceet(line[7:27])
 
             if ~np.isfinite(last_apoapsis):
-                this_apo = periapsis - 0.00000001  # A hack.  Don't want a NaN in there.
+                this_apo = (
+                    periapsis - 0.00000001
+                )  # A hack.  Don't want a NaN in there.
                 # First orbit will start at periapsis, effectively
             else:
                 this_apo = last_apoapsis

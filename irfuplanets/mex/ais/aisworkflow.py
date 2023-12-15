@@ -134,7 +134,9 @@ def listener_process(queue, configurer):
             ):  # We send this as a sentinel to tell the listener to quit.
                 break
             logger = logging.getLogger(record.name)
-            logger.handle(record)  # No level or filter logic applied - just do it!
+            logger.handle(
+                record
+            )  # No level or filter logic applied - just do it!
         except Exception:
             import sys
             import traceback
@@ -185,7 +187,9 @@ if __name__ == "__main__":
 
     print("-- Starting writer")
     queue = mp.Manager().Queue(-1)
-    writer = mp.Process(target=listener_process, args=(queue, listener_configurer))
+    writer = mp.Process(
+        target=listener_process, args=(queue, listener_configurer)
+    )
     writer.start()
 
     runner = async_worker_review
@@ -205,7 +209,10 @@ if __name__ == "__main__":
 
     print("-- Starting work...")
     print("-- orbits = ", orbits)
-    r = [pool.apply_async(runner, args=(o, queue, worker_configurer)) for o in orbits]
+    r = [
+        pool.apply_async(runner, args=(o, queue, worker_configurer))
+        for o in orbits
+    ]
     print("-- Jobs allocated")
 
     pool.close()

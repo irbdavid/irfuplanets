@@ -49,7 +49,8 @@ def load_swea_l2_summary(
     while t < finish:
         files.extend(
             http_manager.query(
-                "swe/l2/%04d/%02d/mvn_swe_l2_%s_*_v*_r*.cdf" % (year, month, kind),
+                "swe/l2/%04d/%02d/mvn_swe_l2_%s_*_v*_r*.cdf"
+                % (year, month, kind),
                 start=start,
                 finish=finish,
                 version_function=lambda x: (
@@ -69,7 +70,9 @@ def load_swea_l2_summary(
 
     # Check for duplicates:
     if len(files) != len(set(files)):
-        raise ValueError("Duplicates appeared in files to load: " + ", ".join(files))
+        raise ValueError(
+            "Duplicates appeared in files to load: " + ", ".join(files)
+        )
 
     if cleanup:
         print("SWEA L2 cleanup complete")
@@ -98,7 +101,9 @@ def load_swea_l2_summary(
                 output["energy"] = output["energy"][::-1]
             else:
                 output["time"] = np.hstack((output["time"], c["time_unix"]))
-                output["def"] = np.hstack((output["def"], c["diff_en_fluxes"].T))
+                output["def"] = np.hstack(
+                    (output["def"], c["diff_en_fluxes"].T)
+                )
 
                 if output["energy"].shape != c["energy"].shape:
                     raise ValueError("Energy range has changed!")

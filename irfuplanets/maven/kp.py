@@ -263,7 +263,8 @@ def load_kp_data(
     while t < finish:
         files.extend(
             http_manager.query(
-                "kp/insitu/%04d/%02d/mvn_kp_insitu_*_v*_r*.tab" % (year, month),
+                "kp/insitu/%04d/%02d/mvn_kp_insitu_*_v*_r*.tab"
+                % (year, month),
                 start=start,
                 finish=finish,
                 version_function=lambda x: (

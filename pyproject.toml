@@ -67,6 +67,7 @@ filterwarnings = [
 
 [tool.black]
 py36 = true
+line-length = 79
 include = '\.pyi?$'
 exclude = '''
 /(
@@ -87,6 +88,7 @@ exclude = '''
 
 [tool.isort]
 profile = "black"
+line_length = 79
 
 [tool.pylint."MESSAGES CONTROL"]
 disable = """

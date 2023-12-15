@@ -42,8 +42,12 @@ def get_f10_7(times, fname=None, return_all=False):
         fname = os.path.expandvars("$SC_DATA_DIR/omni/omni2_daily_19560.lst")
 
     data = np.loadtxt(fname).T
-    years = dict([(k, spiceet("%d-001T00:00" % k)) for k in np.unique(data[0])])
-    time = np.array([years[d] + (v - 1.0) * 86400.0 for d, v in zip(data[0], data[1])])
+    years = dict(
+        [(k, spiceet("%d-001T00:00" % k)) for k in np.unique(data[0])]
+    )
+    time = np.array(
+        [years[d] + (v - 1.0) * 86400.0 for d, v in zip(data[0], data[1])]
+    )
     if return_all:
         return time, 1.0 * data[3]
     return np.interp(times, time, data[3], left=np.nan, right=np.nan)
@@ -104,7 +108,9 @@ class IonosphericModel(object):
         if ~np.isfinite(sc_altitude * sc_theta):
             raise ValueError("Need sensible altitude, sza")
 
-        altitudes = np.arange(sc_altitude, 0.0, -1.0 * np.abs(altitude_resolution))
+        altitudes = np.arange(
+            sc_altitude, 0.0, -1.0 * np.abs(altitude_resolution)
+        )
         # print 'Computing AIS Response at %f km, %f deg' % \
         #  (sc_altitude, np.rad2deg(sc_theta))
         ne = self.__call__(altitudes, sc_theta)
@@ -182,7 +188,9 @@ class ChapmanLayer(IonosphericModel):
     def __call__(self, alt, theta=0.0):
         # The SEC(THETA) approx is only valid for small theta...
         y = (alt - self.z0) / self.h
-        return self.n0 * np.exp(0.5 * (1.0 - y - 1.0 / np.cos(theta) * np.exp(-y)))
+        return self.n0 * np.exp(
+            0.5 * (1.0 - y - 1.0 / np.cos(theta) * np.exp(-y))
+        )
 
     def fit(self, altitude, density, theta):
         """Fit this model to some profile.  Requires values sorted by altitude.
@@ -205,7 +213,9 @@ class ChapmanLayer(IonosphericModel):
 
         def _f(x):
             return self.n0 * np.exp(
-                1.0 - y_prime / x - np.cos(theta) ** -1.0 * np.exp(-y_prime / x)
+                1.0
+                - y_prime / x
+                - np.cos(theta) ** -1.0 * np.exp(-y_prime / x)
             )
 
         def _err(x):
@@ -233,7 +243,9 @@ class ChapmanLayer(IonosphericModel):
                 * (
                     1.0
                     - (altitude - x[1]) / x[2]
-                    - 1.0 / np.cos(theta) * np.exp(-1.0 * (altitude - x[1]) / x[2])
+                    - 1.0
+                    / np.cos(theta)
+                    * np.exp(-1.0 * (altitude - x[1]) / x[2])
                 )
             )
 
@@ -252,10 +264,13 @@ class ChapmanLayer(IonosphericModel):
         return success
 
     def __str__(self):
-        return "ChapmanLayer with peak density %e at altitude %f, scale height %f" % (
-            self.n0,
-            self.z0,
-            self.h,
+        return (
+            "ChapmanLayer with peak density %e at altitude %f, scale height %f"
+            % (
+                self.n0,
+                self.z0,
+                self.h,
+            )
         )
 
 
@@ -263,7 +278,9 @@ class Morgan2008ChapmanLayer(ChapmanLayer):
     """Chapman Layer fit described by Morgan et al 2008"""
 
     def __init__(self):
-        super(Morgan2008ChapmanLayer, self).__init__(n0=1.58e5, z0=133.6, h=8.9)
+        super(Morgan2008ChapmanLayer, self).__init__(
+            n0=1.58e5, z0=133.6, h=8.9
+        )
 
 
 class Fallows15ChapmanLayer(ChapmanLayer):
@@ -315,10 +332,13 @@ class GaussianModel(IonosphericModel):
         return self.n0 * np.exp(-(((alt - self.z0) / self.h) ** 2.0))
 
     def __str__(self):
-        return "Gaussian with peak density %e at altitude %f, scale height %f" % (
-            self.n0,
-            self.z0,
-            self.h,
+        return (
+            "Gaussian with peak density %e at altitude %f, scale height %f"
+            % (
+                self.n0,
+                self.z0,
+                self.h,
+            )
         )
 
 
@@ -503,7 +523,9 @@ if __name__ == "__main__":
     all_models = []
     for n in (1e4, 2e4, 4e4, 8e4, 12e4):
         all_models.append(
-            ChainedModels((Morgan2008ChapmanLayer(), GaussianModel(n, 220.0, 70.0)))
+            ChainedModels(
+                (Morgan2008ChapmanLayer(), GaussianModel(n, 220.0, 70.0))
+            )
         )
 
     for n in (1e4, 2e4, 4e4, 8e4, 12e4):
@@ -518,7 +540,9 @@ if __name__ == "__main__":
         )
 
     model = Morgan2008ChapmanLayer()
-    model = ChainedModels((Morgan2008ChapmanLayer(), ChapmanLayer(1e4, 300, 100)))
+    model = ChainedModels(
+        (Morgan2008ChapmanLayer(), ChapmanLayer(1e4, 300, 100))
+    )
 
     alt = 800.0
     alt_res = 2.0
@@ -555,7 +579,9 @@ if __name__ == "__main__":
     (inx,) = np.where((f < ne_to_fp(np.max(n))) & (f > f0))
     print(inx)
 
-    hh2, nn2 = _laminated_delays_test(t[inx], f[inx], f0, altitude=alt * 1000.0)
+    hh2, nn2 = _laminated_delays_test(
+        t[inx], f[inx], f0, altitude=alt * 1000.0
+    )
     hh, nn = laminated_delays(t[inx], f[inx], f0, altitude=alt * 1000.0)
     print(hh2[-10:], hh[-10:])
     print()

@@ -94,7 +94,9 @@ class AISTool(object):
             figsize = (12, 9)
 
         plt.close(figure_number)
-        self.figure = plt.figure(figure_number, figsize=figsize, facecolor="0.6")
+        self.figure = plt.figure(
+            figure_number, figsize=figsize, facecolor="0.6"
+        )
         g = mpl.gridspec.GridSpec(
             6,
             2,
@@ -134,12 +136,16 @@ class AISTool(object):
             self.figure.canvas.mpl_connect("button_press_event", self.on_click)
         )
         self.cids.append(
-            self.figure.canvas.mpl_connect("button_release_event", self.on_release)
+            self.figure.canvas.mpl_connect(
+                "button_release_event", self.on_release
+            )
         )
         self.cids.append(
             self.figure.canvas.mpl_connect("motion_notify_event", self.on_move)
         )
-        self.cids.append(self.figure.canvas.mpl_connect("scroll_event", self.on_scroll))
+        self.cids.append(
+            self.figure.canvas.mpl_connect("scroll_event", self.on_scroll)
+        )
 
         self.message("Initialized")
 
@@ -242,7 +248,9 @@ class AISTool(object):
         ilast = None
         empty_count = 0
         for i, ig in enumerate(self.ionogram_list):
-            ignum = int(round((ig.time - self.extent[0]) / ais.ais_spacing_seconds))
+            ignum = int(
+                round((ig.time - self.extent[0]) / ais.ais_spacing_seconds)
+            )
             if ignum > no_ionograms_expected:
                 raise mex.MEXException(
                     "Out of range %d, %d, %d"
@@ -265,7 +273,9 @@ class AISTool(object):
 
         errs = np.geterr()
         np.seterr(divide="ignore")
-        self.tser_arr = np.log10(np.mean(self.tser_arr_all[::-1, :, :], axis=0))
+        self.tser_arr = np.log10(
+            np.mean(self.tser_arr_all[::-1, :, :], axis=0)
+        )
         self.tser_arr_all = np.log10(self.tser_arr_all)
         np.seterr(**errs)
 
@@ -296,7 +306,9 @@ class AISTool(object):
 
             for i, ig in enumerate(self.ionogram_list):
                 if ig is self.current_ionogram:
-                    if ((i + ig_inc) > 0) and ((i + ig_inc) < len(self.ionogram_list)):
+                    if ((i + ig_inc) > 0) and (
+                        (i + ig_inc) < len(self.ionogram_list)
+                    ):
                         ionogram = self.ionogram_list[i + ig_inc]
                     else:
                         self.set_orbit(
@@ -346,7 +358,9 @@ class AISTool(object):
             self.message(
                 "Set ionogram to %s [%d/%d]"
                 % (
-                    irftime.utcstr(1.0 * self.current_ionogram.time, format="C"),
+                    irftime.utcstr(
+                        1.0 * self.current_ionogram.time, format="C"
+                    ),
                     ig_index,
                     len(self.ionogram_list),
                 )
@@ -376,7 +390,9 @@ class AISTool(object):
                 if len(self.selected_plasma_lines) >= 1:
                     arr = np.array(self.selected_plasma_lines, ndmin=1)
                     # arr = np.sort(arr)
-                    self.current_ionogram.digitization.set_fp_local_manual(arr * 1.0e6)
+                    self.current_ionogram.digitization.set_fp_local_manual(
+                        arr * 1.0e6
+                    )
                     self._digitization_saved = False
                     self.current_ionogram.digitization.set_timestamp()
                     self.message(
@@ -412,7 +428,9 @@ class AISTool(object):
 
             elif self.status == "ground":
                 # Could refine this
-                self.current_ionogram.digitization.set_ground(event.ydata / 1.0e3)
+                self.current_ionogram.digitization.set_ground(
+                    event.ydata / 1.0e3
+                )
                 self._digitization_saved = False
                 self.current_ionogram.digitization.set_timestamp()
                 self.set_status(None)
@@ -492,7 +510,9 @@ class AISTool(object):
             if self.status == "go_tracing":
                 self.message("Finished tracing")
                 if self.tracing_status_retain:
-                    self.set_status("tracing")  # return to start of tracing mode
+                    self.set_status(
+                        "tracing"
+                    )  # return to start of tracing mode
                 else:
                     self.set_status(None)
                 self._digitization_saved = False
@@ -565,9 +585,13 @@ class AISTool(object):
         i.threshold_data()
         i.generate_binary_arrays()
         self.message(i.calculate_ground_trace())
-        self.message(i.calculate_fp_local(figure_number=self.fp_local_figure_number))
         self.message(
-            i.calculate_td_cyclotron(figure_number=self.td_cyclotron_figure_number)
+            i.calculate_fp_local(figure_number=self.fp_local_figure_number)
+        )
+        self.message(
+            i.calculate_td_cyclotron(
+                figure_number=self.td_cyclotron_figure_number
+            )
         )
         self.message(i.calculate_reflection())
 
@@ -651,14 +675,20 @@ class AISTool(object):
             plt.cla()
             if d.is_invertible():
                 winning = d.invert()
-                if winning & np.all(d.density > 0.0) & np.all(d.altitude > 0.0):
+                if (
+                    winning
+                    & np.all(d.density > 0.0)
+                    & np.all(d.altitude > 0.0)
+                ):
                     plt.plot(d.density, d.altitude, color="k")
             plt.xlim(5.0e1, 5e5)
             plt.ylim(0, 499)
             alt = np.arange(0.0, 499.0, 5.0)
             if self.current_ionogram.sza < 89.9:
                 plt.plot(
-                    self.ionospheric_model(alt, np.deg2rad(self.current_ionogram.sza)),
+                    self.ionospheric_model(
+                        alt, np.deg2rad(self.current_ionogram.sza)
+                    ),
                     alt,
                     color="green",
                 )
@@ -715,7 +745,10 @@ class AISTool(object):
         )
         inx = (
             1.0e6
-            * (self.current_ionogram.frequencies.shape[0] * self.timeseries_frequency)
+            * (
+                self.current_ionogram.frequencies.shape[0]
+                * self.timeseries_frequency
+            )
             / (
                 self.current_ionogram.frequencies[-1]
                 - self.current_ionogram.frequencies[0]
@@ -772,11 +805,16 @@ class AISTool(object):
             )
         )
 
-        pos = mex.iau_pgr_alt_lat_lon_position(float(self.current_ionogram.time))
-        title += "\nIAU: Altitude = %.1f km, Latitude = %.1f, Longitude = %.1f deg" % (
-            pos[0],
-            pos[1],
-            modpos(pos[2]),
+        pos = mex.iau_pgr_alt_lat_lon_position(
+            float(self.current_ionogram.time)
+        )
+        title += (
+            "\nIAU: Altitude = %.1f km, Latitude = %.1f, Longitude = %.1f deg"
+            % (
+                pos[0],
+                pos[1],
+                modpos(pos[2]),
+            )
         )
 
         plt.sca(self.tser_ax)
@@ -854,7 +892,9 @@ class AISTool(object):
         if self.digitization_db is not None:
             if self.current_ionogram.digitization:
                 try:
-                    self.digitization_db.add(self.current_ionogram.digitization)
+                    self.digitization_db.add(
+                        self.current_ionogram.digitization
+                    )
                     self.digitization_db.write()
                     self._digitization_saved = True
                     self.message("Saved digitizations")
@@ -1006,7 +1046,8 @@ class AISTool(object):
             self.current_ionogram._old_data = self.current_ionogram.data.copy()
 
         self.current_ionogram.data = 10.0 ** (
-            self.current_ionogram._cyc_data * (self.vmax - self.vmin) + self.vmin
+            self.current_ionogram._cyc_data * (self.vmax - self.vmin)
+            + self.vmin
         )
         self.update()
 
@@ -1018,7 +1059,8 @@ class AISTool(object):
             self.current_ionogram._old_data = self.current_ionogram.data.copy()
 
         self.current_ionogram.data = 10.0 ** (
-            self.current_ionogram._ion_data * (self.vmax - self.vmin) + self.vmin
+            self.current_ionogram._ion_data * (self.vmax - self.vmin)
+            + self.vmin
         )
         self.update()
 
@@ -1030,7 +1072,8 @@ class AISTool(object):
             self.current_ionogram._old_data = self.current_ionogram.data.copy()
 
         self.current_ionogram.data = 10.0 ** (
-            self.current_ionogram._fp_data * (self.vmax - self.vmin) + self.vmin
+            self.current_ionogram._fp_data * (self.vmax - self.vmin)
+            + self.vmin
         )
         # d = celsius.remove_none_edge_intersecting(
         #           self.current_ionogram._fp_data, 2)
@@ -1159,7 +1202,9 @@ class AISTool(object):
         )
 
     def key_d(self):
-        self.current_ionogram.digitization = IonogramDigitization(self.current_ionogram)
+        self.current_ionogram.digitization = IonogramDigitization(
+            self.current_ionogram
+        )
         self._digitization_saved = False
 
     def key_m(self):
@@ -1229,12 +1274,16 @@ class AISTool(object):
             mex.orbits[float(self.current_ionogram.time)].number,
             irftime.spiceet_to_utcstr(self.current_ionogram.time, fmt="C"),
         )
-        plt.title(irftime.spiceet_to_utcstr(self.current_ionogram.time, fmt="C"))
+        plt.title(
+            irftime.spiceet_to_utcstr(self.current_ionogram.time, fmt="C")
+        )
         plt.savefig(fname.replace(":", ""))
         plt.close(fig)
 
     def key_r(self):
-        self.message(self.current_ionogram.refine_trace())  # Will operate on d as well
+        self.message(
+            self.current_ionogram.refine_trace()
+        )  # Will operate on d as well
 
     def key_i(self):
         print("----------------")

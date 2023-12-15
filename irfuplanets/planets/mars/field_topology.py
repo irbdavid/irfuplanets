@@ -134,7 +134,9 @@ def plot_field_topology(
     return out
 
 
-def interpolate_along_trajectory(latitude, longitude, description=None, fname=None):
+def interpolate_along_trajectory(
+    latitude, longitude, description=None, fname=None
+):
     """Longitudes are necessarily positive east, as in the idlsaveile"""
     if latitude.shape != longitude.shape:
         raise ValueError("Shape mismatch")
@@ -186,7 +188,9 @@ if __name__ == "__main__":
         lon = np.arange(0.0, 360.0, 0.5)
 
         plt.figure()
-        plt.plot(lon, interpolate_along_trajectory(lat, lon, ALL_DESCRIPTIONS[0]))
+        plt.plot(
+            lon, interpolate_along_trajectory(lat, lon, ALL_DESCRIPTIONS[0])
+        )
 
         plt.figure()
         trajs = interpolate_along_trajectory(lat, lon)

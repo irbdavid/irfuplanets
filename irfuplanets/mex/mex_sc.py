@@ -10,7 +10,14 @@ import numpy as np
 import spiceypy
 
 import irfuplanets
-from irfuplanets.time import Orbit, OrbitDict, now, spiceet, utcstr, utcstr_to_spiceet
+from irfuplanets.time import (
+    Orbit,
+    OrbitDict,
+    now,
+    spiceet,
+    utcstr,
+    utcstr_to_spiceet,
+)
 
 __author__ = "David Andrews"
 __copyright__ = "Copyright 2023, David Andrews"
@@ -88,7 +95,9 @@ def load_kernels(
 ):
     """Load spice kernels, with a stateful thing to prevent multiple calls"""
     # global last_spice_time_window
-    last_spice_time_window = getattr(spiceypy, "last_spice_time_window", "MEX:NONE")
+    last_spice_time_window = getattr(
+        spiceypy, "last_spice_time_window", "MEX:NONE"
+    )
 
     if load_all:
         # Launch to now + 10 yrs
@@ -205,7 +214,9 @@ load_spice_kernels = load_kernels  # Synonym, innit
 unload_spice_kernels = unload_kernels
 
 
-def position(time, frame="IAU_MARS", target="MEX", observer="MARS", correction="NONE"):
+def position(
+    time, frame="IAU_MARS", target="MEX", observer="MARS", correction="NONE"
+):
     """Wrapper around spiceypy.spkpos that handles array inputs,
     and provides useful defaults"""
 
@@ -314,7 +325,9 @@ def mso_r_lat_lon_position(time, mso=False, sza=False, **kwargs):
 
     if sza:
         pos = position(time, frame="MSO", **kwargs)
-        sza = np.rad2deg(np.arctan2(np.sqrt(pos[1] ** 2 + pos[2] ** 2), pos[0]))
+        sza = np.rad2deg(
+            np.arctan2(np.sqrt(pos[1] ** 2 + pos[2] ** 2), pos[0])
+        )
         if isinstance(sza, np.ndarray):
             inx = sza < 0.0
             if np.any(inx):
@@ -623,7 +636,9 @@ def plot_mex_orbits_bar(
         number_every = int(orbit_count / 10)
 
     if number_every:
-        numbered_orbits = [o for o in orbit_list if (o.number % number_every) == 0]
+        numbered_orbits = [
+            o for o in orbit_list if (o.number % number_every) == 0
+        ]
 
     ticks = [o.periapsis for o in numbered_orbits]
     nums = [o.number for o in numbered_orbits]

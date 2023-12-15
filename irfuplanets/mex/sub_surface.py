@@ -42,7 +42,10 @@ def get_tec_filename(orbit):
     if orbit < 2530:
         d = mex.data_directory + "marsis/MEX-M-MARSIS-5-DDR-SS-TEC-V1.0/DATA/"
     elif orbit < 4810:
-        d = mex.data_directory + "marsis/MEX-M-MARSIS-5-DDR-SS-TEC-EXT1-V1.0/DATA/"
+        d = (
+            mex.data_directory
+            + "marsis/MEX-M-MARSIS-5-DDR-SS-TEC-EXT1-V1.0/DATA/"
+        )
     # elif orbit < 8410:
     #     raise IOError("I have missing data from ~4810 ~8410")
     #     d =  mex.data_directory +
@@ -120,7 +123,8 @@ def read_tec(start, finish=None, params=("EPHEMERIS_TIME", "TEC", "SZA")):
     output = np.hstack(chunks)
 
     output = output[
-        (output["EPHEMERIS_TIME"] > start) & (output["EPHEMERIS_TIME"] < finish)
+        (output["EPHEMERIS_TIME"] > start)
+        & (output["EPHEMERIS_TIME"] < finish)
     ]
 
     return output
@@ -152,7 +156,9 @@ def plot_tec(
     t = read_tec(start, finish)
 
     good = t["FLAG"] is True
-    plt.plot(t[x_axis][good], t["TEC"][good] / TECU_electrons_per_m2, fmt, mew=mew)
+    plt.plot(
+        t[x_axis][good], t["TEC"][good] / TECU_electrons_per_m2, fmt, mew=mew
+    )
     plt.plot(
         t[x_axis][~good],
         t["TEC"][~good] / TECU_electrons_per_m2,

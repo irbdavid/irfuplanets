@@ -204,7 +204,9 @@ class HTTP_Manager(object):
             check_time = True
 
         if check_time and (date_function is None):
-            raise ValueError("Start and finish are set, but date_function is not")
+            raise ValueError(
+                "Start and finish are set, but date_function is not"
+            )
 
         if check_time:
             start_day = spiceet(utcstr(start, "ISOC")[:10])
@@ -262,7 +264,9 @@ class HTTP_Manager(object):
 
         # Find remote matches
         if self.download:
-            index_path = self.local_path + query_base_path + ".remote_index.html"
+            index_path = (
+                self.local_path + query_base_path + ".remote_index.html"
+            )
             remote_path = self.remote_path + query_base_path
 
             update_index = True
@@ -332,7 +336,9 @@ class HTTP_Manager(object):
                                 fname, self.local_path + query_base_path + f[1]
                             )
                         except IOError:
-                            print("Error encountered - index may be out of date?")
+                            print(
+                                "Error encountered - index may be out of date?"
+                            )
                             raise
 
                         # Update the name with the local directory

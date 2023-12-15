@@ -73,7 +73,9 @@ def load_ngims_l2(
 
     # Check for duplicates:
     if len(files) != len(set(files)):
-        raise ValueError("Duplicates appeared in files to load: " + ", ".join(files))
+        raise ValueError(
+            "Duplicates appeared in files to load: " + ", ".join(files)
+        )
 
     if cleanup:
         print("NGIMS L2 cleanup complete")
@@ -118,8 +120,12 @@ def load_ngims_l2(
                     output[s]["time"] = d[0, inx]
                     output[s]["density"] = d[2, inx]
                 else:
-                    output[s]["time"] = np.hstack((output[s]["time"], d[0, inx]))
-                    output[s]["density"] = np.hstack((output[s]["density"], d[2, inx]))
+                    output[s]["time"] = np.hstack(
+                        (output[s]["time"], d[0, inx])
+                    )
+                    output[s]["density"] = np.hstack(
+                        (output[s]["density"], d[2, inx])
+                    )
 
     elif kind == "csn":
         output = {}
@@ -153,8 +159,12 @@ def load_ngims_l2(
                     output[s]["time"] = d[0, inx]
                     output[s]["density"] = d[2, inx]
                 else:
-                    output[s]["time"] = np.hstack((output[s]["time"], d[0, inx]))
-                    output[s]["density"] = np.hstack((output[s]["density"], d[2, inx]))
+                    output[s]["time"] = np.hstack(
+                        (output[s]["time"], d[0, inx])
+                    )
+                    output[s]["density"] = np.hstack(
+                        (output[s]["density"], d[2, inx])
+                    )
 
     else:
         raise ValueError("Input kind='%s' not recognized" % kind)

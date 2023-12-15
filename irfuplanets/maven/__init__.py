@@ -42,7 +42,8 @@ for f in sorted(glob(DIRECTORY + "maven_orb_rec_*.orb")):
     for k, v in tmp.items():
         if k in orbits:
             raise IOError(
-                "Duplicate information contained in %s: Orbit %d repeated?" % (f, k)
+                "Duplicate information contained in %s: Orbit %d repeated?"
+                % (f, k)
             )
         orbits[k] = v
 

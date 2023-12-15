@@ -23,7 +23,13 @@ from irfuplanets.data import angle_difference
 from irfuplanets.planets.mars.chapman import Morgan2008ChapmanLayer
 from irfuplanets.planets.mars.field_models import CainMarsFieldModel
 from irfuplanets.plot import make_colorbar_cax
-from irfuplanets.time import now, spiceet, spiceet_to_utcstr, utcstr, utcstr_to_spiceet
+from irfuplanets.time import (
+    now,
+    spiceet,
+    spiceet_to_utcstr,
+    utcstr,
+    utcstr_to_spiceet,
+)
 
 __auto_version__ = "1.0"
 
@@ -161,7 +167,9 @@ def _arg_peak(
         out /= np.std(out[h])
 
     if threshold is not None:
-        vals = np.array([v for v in vals if out[v] > threshold], dtype=np.int32)
+        vals = np.array(
+            [v for v in vals if out[v] > threshold], dtype=np.int32
+        )
     if full_output:
         return vals, out
     return vals
@@ -332,7 +340,9 @@ def _remove_none_edge_intersecting(img, edge=0, width=1, as_list=False):
                 out[s == v] = 1
                 tmp = np.zeros_like(img)
                 tmp[s == v] = 1
-                fp_list.append((np.mean(tmp.nonzero()[1]), np.mean(tmp.nonzero()[0])))
+                fp_list.append(
+                    (np.mean(tmp.nonzero()[1]), np.mean(tmp.nonzero()[0]))
+                )
 
     # if as_list:
     #     return img, sorted(fp_list, key=lambda x: x[0])
@@ -374,9 +384,13 @@ class AISFileManager(object):
         if os.uname()[1] == "brain":
             self.brain = False  # Hacks!
 
-        self.local = irfuplanets.config["mex"]["data_directory"] + "marsis/ais/"
+        self.local = (
+            irfuplanets.config["mex"]["data_directory"] + "marsis/ais/"
+        )
 
-        self._known_empty_orbits_file = self.local + "ais_known_empty_orbits.pk"
+        self._known_empty_orbits_file = (
+            self.local + "ais_known_empty_orbits.pk"
+        )
         if os.path.exists(self._known_empty_orbits_file):
             with open(self._known_empty_orbits_file, "rb") as f:
                 self._known_empty_orbits = pickle.load(f)
@@ -394,7 +408,9 @@ class AISFileManager(object):
                 #   ACTIVE_IONOSPHERIC_SOUNDER/"
                 username, password = os.getenv("MEX_IOWA_USER_PASS").split(":")
                 self.passman = urllib.request.HTTPPasswordMgrWithDefaultRealm()
-                self.passman.add_password(None, self.remote_url, username, password)
+                self.passman.add_password(
+                    None, self.remote_url, username, password
+                )
 
     def get_file(self, time, remote=None, *args, **kwargs):
         if remote is None:
@@ -410,7 +426,8 @@ class AISFileManager(object):
             except IOError as e:
                 print(e)
                 raise IOError(
-                    "Couldn't locate the appropriate file, " "either here or remotely"
+                    "Couldn't locate the appropriate file, "
+                    "either here or remotely"
                 )
         return f
 
@@ -418,7 +435,9 @@ class AISFileManager(object):
         if copy_to_local is None:
             copy_to_local = self.copy_to_local
 
-        if (time in self._known_empty_orbits) and (time < LAST_KNOWN_GOOD_AIS_ORBIT):
+        if (time in self._known_empty_orbits) and (
+            time < LAST_KNOWN_GOOD_AIS_ORBIT
+        ):
             if self.verbose:
                 print("Orbit %d is known to be empty" % time)
             raise IOError("No data for orbit %d known already" % time)
@@ -483,7 +502,9 @@ class AISFileManager(object):
             except Exception as e:
                 print("Searching SPIS - failed: %s" % str(e))
 
-        if (time in self._known_empty_orbits) and (time < LAST_KNOWN_GOOD_AIS_ORBIT):
+        if (time in self._known_empty_orbits) and (
+            time < LAST_KNOWN_GOOD_AIS_ORBIT
+        ):
             if self.verbose:
                 print("Orbit %d is known to be empty" % time)
             raise IOError("No data for orbit %d known already" % time)
@@ -497,7 +518,9 @@ class AISFileManager(object):
                 if self.verbose:
                     print("Trying %s" % url)
 
-                self.authhandler = urllib.request.HTTPBasicAuthHandler(self.passman)
+                self.authhandler = urllib.request.HTTPBasicAuthHandler(
+                    self.passman
+                )
                 self.opener = urllib.request.build_opener(self.authhandler)
                 urllib.request.install_opener(self.opener)
                 with urllib.request.urlopen(url) as pagehandle:
@@ -592,7 +615,9 @@ def read_ais(start, finish=None, input_format=None, verbose=False):
 
     if not isinstance(start, int):
         ionograms = [
-            i for i in ionograms if (i.time >= start_et and i.time <= finish_et)
+            i
+            for i in ionograms
+            if (i.time >= start_et and i.time <= finish_et)
         ]
 
     return ionograms
@@ -699,7 +724,9 @@ class Ionogram(object):
         self.linear_frequency = False
 
         self.frequencies = np.empty(160)
-        self.delays = (np.arange(80) * 91.4 + (91.4 + 162.5)) * 1e-6  # Cf. Morgan
+        self.delays = (
+            np.arange(80) * 91.4 + (91.4 + 162.5)
+        ) * 1e-6  # Cf. Morgan
 
         if self.data is None:
             self.empty = True
@@ -781,7 +808,9 @@ class Ionogram(object):
         if not np.isfinite(self.mex_altitude):
             if verbose:
                 print("Position")
-            self.mex_altitude = mex.iau_pgr_alt_lat_lon_position(float(self.time))[0]
+            self.mex_altitude = mex.iau_pgr_alt_lat_lon_position(
+                float(self.time)
+            )[0]
 
         # milliseconds and megahertz
         extent = (
@@ -844,8 +873,12 @@ class Ionogram(object):
             if verbose:
                 print("Ionogram.plot: Model")
 
-            pos, self.sza = mex.mso_r_lat_lon_position(float(self.time), sza=True)
-            self.mex_altitude = mex.iau_pgr_alt_lat_lon_position(float(self.time))[0]
+            pos, self.sza = mex.mso_r_lat_lon_position(
+                float(self.time), sza=True
+            )
+            self.mex_altitude = mex.iau_pgr_alt_lat_lon_position(
+                float(self.time)
+            )[0]
 
         if overplot_model:
             if verbose:
@@ -908,7 +941,11 @@ class Ionogram(object):
             if verbose:
                 print("Ionogram.plot: Digitization")
             d = self.digitization
-            tit = tit + "\nDigitization: " + utcstr(float(d.timestamp), format="C")[:-7]
+            tit = (
+                tit
+                + "\nDigitization: "
+                + utcstr(float(d.timestamp), format="C")[:-7]
+            )
 
             # Expected ground delay
             x0, x1 = plt.xlim()
@@ -1013,7 +1050,9 @@ class Ionogram(object):
                 td = td_to_modb(d.td_cyclotron) * 1.0e9
                 tit += ", |B| = %.1f +/- %.1f nT" % (
                     td,
-                    td - td_to_modb(d.td_cyclotron + d.td_cyclotron_error) * 1.0e9,
+                    td
+                    - td_to_modb(d.td_cyclotron + d.td_cyclotron_error)
+                    * 1.0e9,
                 )
 
             if np.isfinite(d.ground):
@@ -1154,7 +1193,9 @@ class Ionogram(object):
         (
             self._fp_data,
             self._morphology_fp_locations,
-        ) = _remove_none_edge_intersecting(self._fp_data, 2, as_list=True, width=5)
+        ) = _remove_none_edge_intersecting(
+            self._fp_data, 2, as_list=True, width=5
+        )
 
         # Label, find COM of each thing, chuck those with COMS in the
         # lower ~25 % of the image. Rank by size, up to a maximum
@@ -1286,13 +1327,17 @@ class Ionogram(object):
                         np.arange(self.frequencies.shape[0]),
                         self.frequencies,
                     )
-                    diffs.append(np.min(np.abs(fp - np.arange(2, 10) * det_fp_local)))
+                    diffs.append(
+                        np.min(np.abs(fp - np.arange(2, 10) * det_fp_local))
+                    )
                 det_err = np.mean(np.array(diffs))
                 del diffs
 
         if figure_number:
             plt.subplot(111)
-            plt.plot(self.frequencies * 1e-6, scaled, "k.", drawstyle="steps-mid")
+            plt.plot(
+                self.frequencies * 1e-6, scaled, "k.", drawstyle="steps-mid"
+            )
             plt.xlim(0.0, 4)
             plt.ylabel("Processed fp_lines")
             plt.xlabel("f/MHz")
@@ -1338,7 +1383,9 @@ class Ionogram(object):
 
         return msg
 
-    def calculate_td_cyclotron(self, figure_number=False, threshold=3, ax=False):
+    def calculate_td_cyclotron(
+        self, figure_number=False, threshold=3, ax=False
+    ):
         self.digitization.delete_td_cyclotron()
         if figure_number:
             _ = plt.figure(figure_number)
@@ -1380,7 +1427,10 @@ class Ionogram(object):
             msg = (
                 "Auto-cyclotron: Failed "
                 "(first line intensity %e below threshold %e)"
-                % (scaled[first_peak_inx], threshold)
+                % (
+                    scaled[first_peak_inx],
+                    threshold,
+                )
             )
             return msg
 
@@ -1390,7 +1440,9 @@ class Ionogram(object):
         if peak_threshold < threshold:
             peak_threshold = threshold
 
-        (second_peak_inx,) = np.where(scaled[first_peak_inx + 1 :] > peak_threshold)
+        (second_peak_inx,) = np.where(
+            scaled[first_peak_inx + 1 :] > peak_threshold
+        )
 
         if second_peak_inx.shape[0] < 1:
             err = first_peak_delay
@@ -1417,14 +1469,18 @@ class Ionogram(object):
             else:
                 msg = (
                     "Auto-cyclotron: Failed "
-                    "(couldn't make sense of second line at %e x first)" % fratio
+                    "(couldn't make sense of second line at %e x first)"
+                    % fratio
                 )
                 return msg
 
         if (first_peak_delay < ais_td_cyclotron_sensible[0]) | (
             first_peak_delay > ais_td_cyclotron_sensible[1]
         ):
-            msg = "Auto-cyclotron: Failed (result not sensible %f)" % first_peak_delay
+            msg = (
+                "Auto-cyclotron: Failed (result not sensible %f)"
+                % first_peak_delay
+            )
             return msg
         else:
             err = np.abs(err)
@@ -1490,7 +1546,8 @@ class Ionogram(object):
                 # frequency_range = (1.0, 4.)# never really higher than 4 Mhz
                 frequency_range = (
                     1.25,
-                    ne_to_fp(2.0 * 1.58e5 * np.cos(np.deg2rad(sza)) ** 0.5) / 1e6,
+                    ne_to_fp(2.0 * 1.58e5 * np.cos(np.deg2rad(sza)) ** 0.5)
+                    / 1e6,
                 )
                 if frequency_range[1] < 2.0:
                     frequency_range = (frequency_range[0], 2.0)
@@ -1533,7 +1590,8 @@ class Ionogram(object):
         self._intermediate_trace = (
             np.array(
                 (
-                    delay - (frequency_range[1] - frequency_range[0]) / 2.77 * 1e-3,
+                    delay
+                    - (frequency_range[1] - frequency_range[0]) / 2.77 * 1e-3,
                     delay,
                 )
             ),
@@ -1551,7 +1609,10 @@ class Ionogram(object):
             f_space = np.diff(d.traced_frequency)
             # print 'mean alt', mean_alt
             if md > 5.0e-3:
-                m = "Auto-ionosphere: Failed (Located trace not sensible %f)" % md
+                m = (
+                    "Auto-ionosphere: Failed (Located trace not sensible %f)"
+                    % md
+                )
             elif mean_alt < 30.0:
                 m = (
                     "Auto-ionosphere: Failed (Located trace too close to"
@@ -1559,7 +1620,9 @@ class Ionogram(object):
                 )
             elif n < 5:
                 m = "Auto-ionosphere: Failed (Too few points returned: %d)" % n
-            elif (np.amax(d.traced_frequency) - np.amin(d.traced_frequency)) < 0.25e6:
+            elif (
+                np.amax(d.traced_frequency) - np.amin(d.traced_frequency)
+            ) < 0.25e6:
                 m = "Auto-ionosphere: Failed (Trace too short)"
             # elif np.median(d_space) < 0.:
             #     # print np.amin(np.diff(d.traced_delay)),
@@ -1589,10 +1652,13 @@ class Ionogram(object):
         d = self.data[10:, 271:] > threshold
         scaled = np.sum(d, 1).astype(float)
         if np.amax(scaled) < 0.3 * d.shape[1]:
-            return "Auto-ground: Failed (no peak above threshold: %f, %f, %f)" % (
-                np.sum(d),
-                np.amax(scaled),
-                0.3 * d.shape[1],
+            return (
+                "Auto-ground: Failed (no peak above threshold: %f, %f, %f)"
+                % (
+                    np.sum(d),
+                    np.amax(scaled),
+                    0.3 * d.shape[1],
+                )
             )
 
         imax = _arg_peak(scaled)
@@ -1600,7 +1666,9 @@ class Ionogram(object):
             imax = imax[0]
             self.digitization.set_ground(self.delays[imax + 10])
 
-            return "Auto-ground: Found at %.1f ms" % (self.delays[imax + 10] * 1.0e3)
+            return "Auto-ground: Found at %.1f ms" % (
+                self.delays[imax + 10] * 1.0e3
+            )
 
     def refine_trace(
         self,
@@ -1668,7 +1736,8 @@ class Ionogram(object):
         if inx.shape[0] < 2:
             dig.delete_trace()
             return (
-                "Refine-trace: Failed (Not enough data above threshold %e)" % threshold
+                "Refine-trace: Failed (Not enough data above threshold %e)"
+                % threshold
             )
 
         new_freqs = new_freqs[inx]
@@ -1745,7 +1814,9 @@ class AISTimeSeries(object):
 
         for ionogram in self.ionogram_list:
             if time_range is not None:
-                if (ionogram.time < time_range[0]) or (ionogram.time > time_range[1]):
+                if (ionogram.time < time_range[0]) or (
+                    ionogram.time > time_range[1]
+                ):
                     continue
 
             # Should check for consistency in the frequency table here maybe?
@@ -1781,7 +1852,9 @@ class AISTimeSeries(object):
 
         for ionogram in self.ionogram_list:
             if time_range is not None:
-                if (ionogram.time < time_range[0]) or (ionogram.time > time_range[1]):
+                if (ionogram.time < time_range[0]) or (
+                    ionogram.time > time_range[1]
+                ):
                     continue
 
             # Should check for consistency in the frequency table here maybe?
@@ -2130,7 +2203,9 @@ class IonogramDigitization:
         d["traced_frequency"] = self.traced_frequency.tolist()
 
         if hasattr(self, "td_cyclotron_selected_t"):
-            d["td_cyclotron_selected_t"] = self.td_cyclotron_selected_t.tolist()
+            d[
+                "td_cyclotron_selected_t"
+            ] = self.td_cyclotron_selected_t.tolist()
 
         return d
 
@@ -2148,7 +2223,9 @@ class IonogramDigitization:
         self.traced_frequency = np.array(d["traced_frequency"])
 
         if hasattr(d, "fp_local_manual_lines"):
-            self.fp_local_manual_lines = np.array(d["fp_local_manual_lines"], ndmin=1)
+            self.fp_local_manual_lines = np.array(
+                d["fp_local_manual_lines"], ndmin=1
+            )
             self.fp_local_manual = d["fp_local_manual"]
 
         if hasattr(d, "td_cyclotron_selected_t"):
@@ -2236,7 +2313,9 @@ class IonogramDigitization:
 
         self._compute_fp_local()
 
-    def set_integrated_fp_local(self, integrated_fp_local, integrated_fp_local_error):
+    def set_integrated_fp_local(
+        self, integrated_fp_local, integrated_fp_local_error
+    ):
         self.integrated_fp_local = integrated_fp_local
         self.integrated_fp_local_error = integrated_fp_local_error
         self._compute_fp_local()
@@ -2247,14 +2326,18 @@ class IonogramDigitization:
             self.fp_local_manual_lines.sort()
         self._compute_fp_local()
 
-    def set_cyclotron(self, td_cyclotron, td_cyclotron_error, method, selected_t=None):
+    def set_cyclotron(
+        self, td_cyclotron, td_cyclotron_error, method, selected_t=None
+    ):
         self.td_cyclotron = td_cyclotron
         self.td_cyclotron_error = td_cyclotron_error
         self.td_cyclotron_method = str(method)
         if selected_t is not None:
             self.td_cyclotron_selected_t = np.array(selected_t, ndmin=1)
 
-    def set_trace(self, traced_delay, traced_frequency, method, traced_intensity=None):
+    def set_trace(
+        self, traced_delay, traced_frequency, method, traced_intensity=None
+    ):
         a = np.argsort(traced_frequency)
         self.traced_delay = traced_delay[a]
         self.traced_frequency = traced_frequency[a]
@@ -2336,7 +2419,9 @@ class IonogramDigitization:
 
         pos = mex.iau_mars_position(float(self.time))
         self.altitude = (
-            np.sqrt(np.sum(pos**2)) - constants.mars_mean_radius_km + self.altitude
+            np.sqrt(np.sum(pos**2))
+            - constants.mars_mean_radius_km
+            + self.altitude
         )
 
         return True
@@ -2346,9 +2431,13 @@ class IonogramDigitization:
             return ""
         orb = mex.orbits[self.time]
         if orb:
-            return mex.data_directory + "marsis/ais_digitizations/%05d/%05d.dig" % (
-                (orb.number // 1000) * 1000,
-                orb.number,
+            return (
+                mex.data_directory
+                + "marsis/ais_digitizations/%05d/%05d.dig"
+                % (
+                    (orb.number // 1000) * 1000,
+                    orb.number,
+                )
             )
 
     def plot(self, ax=None, clear=False, **kwargs):
@@ -2380,7 +2469,10 @@ class DigitizationDB:
             self.filename = (
                 mex.data_directory
                 + "marsis/ais_digitizations/%05d/%05d.dig"
-                % ((orbit // 1000) * 1000, orbit)
+                % (
+                    (orbit // 1000) * 1000,
+                    orbit,
+                )
             )
         if filename:
             self.filename = filename
@@ -2430,7 +2522,10 @@ class DigitizationDB:
                 if not isinstance(tmp[0], dict):
                     # raise IOError("File %s does not contain a list of
                     # dictionaries - old version")
-                    print("File %s has an old/unrecognized format: deleting" % filename)
+                    print(
+                        "File %s has an old/unrecognized format: deleting"
+                        % filename
+                    )
                     os.remove(filename)
 
             self._digitization_list = []
@@ -2474,7 +2569,8 @@ class DigitizationDB:
                     print("(Replaced 1 digitization)")
         else:
             raise ValueError(
-                "Supply IonogramDigitization objects only: %s" % str(type(digitization))
+                "Supply IonogramDigitization objects only: %s"
+                % str(type(digitization))
             )
 
     def get_all(self, copy=False):
@@ -2551,19 +2647,24 @@ def compute_all_digitizations(orbit, filename=None, verbose=False):
                 print(i)
 
     db.write()
-    result = "%d: Processed %d Ionograms: FP = %d, TD = %d, REFL = %d, GND = %d" % (
-        orbit,
-        len(db),
-        fp_local_counter,
-        td_cyclotron_counter,
-        ion_counter,
-        ground_counter,
+    result = (
+        "%d: Processed %d Ionograms: FP = %d, TD = %d, REFL = %d, GND = %d"
+        % (
+            orbit,
+            len(db),
+            fp_local_counter,
+            td_cyclotron_counter,
+            ion_counter,
+            ground_counter,
+        )
     )
     print(result)
     return result
 
 
-def produce_ne_b_file(orbits, file_name="MARSIS_ne_b_$DATE.txt", use_ais_index=False):
+def produce_ne_b_file(
+    orbits, file_name="MARSIS_ne_b_$DATE.txt", use_ais_index=False
+):
     """docstring for produce_ne_b_file"""
 
     if "$DATE" in file_name:
@@ -2836,7 +2937,9 @@ def _generate_ais_index(
             count = len(out)
         print("Loaded %d records" % count)
         if start_orbit is None:
-            start_orbit = max([k for k in out if np.any(np.isfinite(out[k]["ne"])) > 0])
+            start_orbit = max(
+                [k for k in out if np.any(np.isfinite(out[k]["ne"])) > 0]
+            )
         print("Starting update at orbit %d" % start_orbit)
     else:
         if start_orbit is None:
@@ -2875,7 +2978,9 @@ def _generate_ais_index(
             a["time"], sza=True, mso=True
         )
         a["iau_pos"] = mex.iau_r_lat_lon_position(a["time"])
-        a["mso_rho"] = np.sqrt(a["mso_pos"][1, :] ** 2.0 + a["mso_pos"][2, :] ** 2.0)
+        a["mso_rho"] = np.sqrt(
+            a["mso_pos"][1, :] ** 2.0 + a["mso_pos"][2, :] ** 2.0
+        )
 
         a["b_model"] = field_model(a["iau_pos"])
 
@@ -2964,7 +3069,9 @@ def get_ais_data(
 
     def magnitude(x):
         return np.sqrt(
-            x["b_model"][0] ** 2.0 + x["b_model"][1] ** 2.0 + x["b_model"][2] ** 2.0
+            x["b_model"][0] ** 2.0
+            + x["b_model"][1] ** 2.0
+            + x["b_model"][2] ** 2.0
         )
 
     incl = np.array(np.hstack([calc_incl(data[d]) for d in data]))
@@ -2988,7 +3095,9 @@ def get_ais_data(
 
     if solar_longitude:
         sol_lon = mex.solar_longitude(_time) * 180.0 / np.pi
-        diff = np.abs(angle_difference(sol_lon, solar_longitude[0], degrees=True))
+        diff = np.abs(
+            angle_difference(sol_lon, solar_longitude[0], degrees=True)
+        )
         inx = inx & (diff < solar_longitude[1])
     else:
         sol_lon = None
@@ -3013,7 +3122,9 @@ def get_ais_data(
         inx = inx & (mag > model_magnitude[0]) & (mag < model_magnitude[1])
 
     if model_inclination:
-        inx = inx & (incl > model_inclination[0]) & (incl < model_inclination[1])
+        inx = (
+            inx & (incl > model_inclination[0]) & (incl < model_inclination[1])
+        )
 
     if density_range:
         inx = inx & (ne > density_range[0]) & (ne < density_range[1])
@@ -3074,7 +3185,8 @@ def get_ais_data(
 
         if solar_longitude:
             d.append(
-                r"$L_S$ = %d $\pm$ %d$^\circ" % (solar_longitude[0], solar_longitude[1])
+                r"$L_S$ = %d $\pm$ %d$^\circ"
+                % (solar_longitude[0], solar_longitude[1])
             )
         if sub_solar_longitude:
             d.append(
@@ -3082,11 +3194,19 @@ def get_ais_data(
                 % (sub_solar_longitude[0], sub_solar_longitude[1])
             )
         if latitude:
-            d.append(r"%d$^\circ$ < $\theta$ < %d$^\circ$" % (latitude[0], latitude[1]))
+            d.append(
+                r"%d$^\circ$ < $\theta$ < %d$^\circ$"
+                % (latitude[0], latitude[1])
+            )
         if longitude:
-            d.append(r"$\lambda$ = %d $\pm$ %d$^\circ" % (longitude[0], longitude[1]))
+            d.append(
+                r"$\lambda$ = %d $\pm$ %d$^\circ"
+                % (longitude[0], longitude[1])
+            )
         if model_magnitude:
-            d.append(r"%d < $|B_C|$ < %d" % (model_magnitude[0], model_magnitude[1]))
+            d.append(
+                r"%d < $|B_C|$ < %d" % (model_magnitude[0], model_magnitude[1])
+            )
         if model_inclination:
             d.append(
                 r"%d$^\circ$ < $\iota_C$ < %d$^\circ$"
@@ -3094,7 +3214,8 @@ def get_ais_data(
             )
         if density_range:
             d.append(
-                r"%d < $n_e / cm^{-3}$ < %d" % (density_range[0], density_range[1])
+                r"%d < $n_e / cm^{-3}$ < %d"
+                % (density_range[0], density_range[1])
             )
 
     if description:

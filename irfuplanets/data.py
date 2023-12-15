@@ -207,7 +207,9 @@ def angle_difference(x, y, degrees=False):
     Input in radians, or degrees if specified."""
     if degrees:
         conv = np.pi / 180.0
-        return np.arctan2(np.sin((x - y) * conv), np.cos((x - y) * conv)) / conv
+        return (
+            np.arctan2(np.sin((x - y) * conv), np.cos((x - y) * conv)) / conv
+        )
     return np.arctan2(np.sin(x - y), np.cos(x - y))
 
 

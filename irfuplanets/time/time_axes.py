@@ -166,7 +166,9 @@ class SpiceetLocator(Locator):
             ]
             # self.allowed_intervals.insert(0, ('20_days', 86400.*20., 20))
             self.allowed_intervals.insert(0, ("50_days", 86400.0 * 50.0, 50))
-            self.allowed_intervals.insert(0, ("100_days", 86400.0 * 100.0, 100))
+            self.allowed_intervals.insert(
+                0, ("100_days", 86400.0 * 100.0, 100)
+            )
 
     def bin_boundaries(self, start, finish):
         if finish < start:
@@ -199,7 +201,9 @@ class SpiceetLocator(Locator):
                         best = a
                         break
                 else:
-                    raise ValueError("Spacing name '%s' not recognized" % self._spacing)
+                    raise ValueError(
+                        "Spacing name '%s' not recognized" % self._spacing
+                    )
             else:
                 best = self._spacing
 
@@ -252,12 +256,15 @@ class SpiceetLocator(Locator):
                 ticks.append(t)
                 day += self.multiple
                 if self.calendar:
-                    test = CelsiusTime("%04d-%02d-%02dT00:00:00" % (year, month, day))
+                    test = CelsiusTime(
+                        "%04d-%02d-%02dT00:00:00" % (year, month, day)
+                    )
                     if test.month != month:
                         month = test.month
                         day = 1
                         t = spiceet(
-                            "%04d-%02d-%02dT00:00:00" % (test.year, test.month, day)
+                            "%04d-%02d-%02dT00:00:00"
+                            % (test.year, test.month, day)
                         )
                         day = 0  # to get back in even sync
                     else:
@@ -291,7 +298,9 @@ class SpiceetLocator(Locator):
                     month = test.month
                     day = 1
                     hour = 0
-                    t = spiceet("%04d-%02d-%02dT%02d:00:00" % (year, month, day, hour))
+                    t = spiceet(
+                        "%04d-%02d-%02dT%02d:00:00" % (year, month, day, hour)
+                    )
                 else:
                     t = test.spiceet
 
@@ -302,7 +311,8 @@ class SpiceetLocator(Locator):
             month = first.month
             year = first.year
             t = spiceet(
-                "%04d-%02d-%02dT%02d:%02d:00" % (year, month, day, hour, minute)
+                "%04d-%02d-%02dT%02d:%02d:00"
+                % (year, month, day, hour, minute)
             )
 
             while t <= finish:
@@ -315,14 +325,16 @@ class SpiceetLocator(Locator):
                     hour -= 24
                     day += 1
                 test = CelsiusTime(
-                    "%04d-%02d-%02dT%02d:%02d:00" % (year, month, day, hour, minute)
+                    "%04d-%02d-%02dT%02d:%02d:00"
+                    % (year, month, day, hour, minute)
                 )
                 if test.month != month:
                     month = test.month
                     day = 1
                     hour = 0
                     t = spiceet(
-                        "%04d-%02d-%02dT%02d:%02d:00" % (year, month, day, hour, minute)
+                        "%04d-%02d-%02dT%02d:%02d:00"
+                        % (year, month, day, hour, minute)
                     )
                 else:
                     t = test.spiceet

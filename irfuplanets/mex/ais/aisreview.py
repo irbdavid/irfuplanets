@@ -62,7 +62,9 @@ class AISReview(object):
         self.calibrator = mex.ais.AISEmpiricalCalibration()
 
         self.mex_orbit = mex.orbits[self.orbit]
-        self.start_time = self.mex_orbit.periapsis - 200.0 * mex.ais.ais_spacing_seconds
+        self.start_time = (
+            self.mex_orbit.periapsis - 200.0 * mex.ais.ais_spacing_seconds
+        )
         self.finish_time = (
             self.mex_orbit.periapsis + 200.0 * mex.ais.ais_spacing_seconds
         )
@@ -121,7 +123,9 @@ class AISReview(object):
 
         # connect the digitizations to the ionograms
         for i in self.ionogram_list:
-            i.digitization = self.digitization_db.get_nearest(i.time, strict=True)
+            i.digitization = self.digitization_db.get_nearest(
+                i.time, strict=True
+            )
 
         for i in self.ionogram_list:
             i.interpolate_frequencies()
@@ -142,7 +146,9 @@ class AISReview(object):
 
         s0 = self.mex_orbit.periapsis
         print(self.extent[0] - s0, self.extent[1] - s0)
-        print(self.ionogram_list[0].time - s0, self.ionogram_list[-1].time - s0)
+        print(
+            self.ionogram_list[0].time - s0, self.ionogram_list[-1].time - s0
+        )
         print(
             min([i.time for i in self.ionogram_list]) - s0,
             max([i.time for i in self.ionogram_list]) - s0,
@@ -202,7 +208,9 @@ class AISReview(object):
             print("Found %d empty ionograms / missing data" % empty_count)
         errs = np.geterr()
         np.seterr(divide="ignore")
-        self.tser_arr = np.log10(np.mean(self.tser_arr_all[::-1, :, :], axis=0))
+        self.tser_arr = np.log10(
+            np.mean(self.tser_arr_all[::-1, :, :], axis=0)
+        )
         self.tser_arr_all = np.log10(self.tser_arr_all)
         np.seterr(**errs)
 
@@ -344,7 +352,9 @@ class AISReview(object):
         )
 
         i = self.ionogram_list[0]
-        (inx,) = np.where((i.frequencies > f_min * 1e6) & (i.frequencies < f_max * 1e6))
+        (inx,) = np.where(
+            (i.frequencies > f_min * 1e6) & (i.frequencies < f_max * 1e6)
+        )
 
         if inx.shape[0] < 2:
             raise ValueError("Only %d frequency bins selected." % inx.shape[0])
@@ -427,7 +437,9 @@ class AISReview(object):
         new_img = np.zeros((new_altitudes.shape[0], img.shape[1])) + np.nan
 
         for i in self.ionogram_list:
-            e = int(round((i.time - self.extent[0]) / mex.ais.ais_spacing_seconds))
+            e = int(
+                round((i.time - self.extent[0]) / mex.ais.ais_spacing_seconds)
+            )
 
             pos = mex.iau_r_lat_lon_position(float(i.time))
             altitudes = (
@@ -498,7 +510,9 @@ class AISReview(object):
             ax = plt.gca()
         plt.sca(ax)
 
-        sub = [d for d in self.digitization_list if np.isfinite(d.td_cyclotron)]
+        sub = [
+            d for d in self.digitization_list if np.isfinite(d.td_cyclotron)
+        ]
         if len(sub) == 0:
             print("No digitizations with marked cyclotron frequency lines")
             return
@@ -537,7 +551,9 @@ class AISReview(object):
             bmag = np.sqrt(np.sum(self._computed_field_model**2.0, 0))
             plt.plot(self.t - t_offset, bmag, color=field_color, ls="-")
             if br:
-                plt.plot(self.t - t_offset, self._computed_field_model[0], "r-")
+                plt.plot(
+                    self.t - t_offset, self._computed_field_model[0], "r-"
+                )
                 plt.plot(
                     self.t - t_offset,
                     -1.0 * self._computed_field_model[0],
@@ -548,7 +564,9 @@ class AISReview(object):
             model_at_value = np.interp(t, self.t, bmag)
             inx = (model_at_value > 100.0) & ((b / model_at_value) < 0.75)
             if not hide_bad_points:
-                plt.plot(t[inx], b[inx], "ro", mec="r", mfc="none", ms=5.0, mew=1.2)
+                plt.plot(
+                    t[inx], b[inx], "ro", mec="r", mfc="none", ms=5.0, mew=1.2
+                )
 
         if label:
             irfplot.ylabel(r"$\mathrm{|B|/nT}$")
@@ -585,7 +603,9 @@ class AISReview(object):
                     zorder=-1000,
                     **kwargs,
                 )
-            plt.plot(d.time, f, fmt, ms=self.marker_size, zorder=1000, **kwargs)
+            plt.plot(
+                d.time, f, fmt, ms=self.marker_size, zorder=1000, **kwargs
+            )
 
             if full_marsis and hasattr(d, "maximum_fp_local"):
                 plt.plot(
@@ -639,7 +659,9 @@ class AISReview(object):
         list(map(parse_error, self.digitization_list))
         print(
             "FP_LOCAL: %d"
-            % len([d for d in self.digitization_list if np.isfinite(d.fp_local)])
+            % len(
+                [d for d in self.digitization_list if np.isfinite(d.fp_local)]
+            )
         )
 
         ax.set_yscale("log")
@@ -659,7 +681,9 @@ class AISReview(object):
             #               i.thresholded_data, s)),
             #         'go',ms=1.3)
 
-    def plot_peak_altitude(self, ax=None, true_color="k", apparent_color="grey"):
+    def plot_peak_altitude(
+        self, ax=None, true_color="k", apparent_color="grey"
+    ):
         if ax is None:
             ax = plt.gca()
         plt.sca(ax)
@@ -684,7 +708,8 @@ class AISReview(object):
                 alt = mex.iau_pgr_alt_lat_lon_position(float(d.time))[0]
                 plt.plot(
                     d.time,
-                    alt - d.traced_delay[-1] * mex.ais.speed_of_light_kms / 2.0,
+                    alt
+                    - d.traced_delay[-1] * mex.ais.speed_of_light_kms / 2.0,
                     marker=".",
                     color=true_color,
                     ms=self.marker_size,
@@ -722,7 +747,9 @@ class AISReview(object):
         for time, delay in zip(t, d):
             mex_pos = mex.iau_mars_position(float(time))
             alt = np.sqrt(np.sum(mex_pos * mex_pos)) - mars_mean_radius_km
-            dnew.append((delay - alt * 2.0 / mex.ais.speed_of_light_kms) * 1.0e3)
+            dnew.append(
+                (delay - alt * 2.0 / mex.ais.speed_of_light_kms) * 1.0e3
+            )
         plt.plot(t, dnew)
 
         irfplot.ylabel(r"$\Delta\tau_D$ / ms")
@@ -760,7 +787,9 @@ class AISReview(object):
         #     + 1
         # )
         ranges = np.arange(80.0, 350.0, 1.0)
-        times = np.arange(self.extent[0], self.extent[1], mex.ais.ais_spacing_seconds)
+        times = np.arange(
+            self.extent[0], self.extent[1], mex.ais.ais_spacing_seconds
+        )
         img = np.zeros((len(times), len(ranges))) + np.nan
 
         label = r"$n_e$ / cm$^{-3}$"
@@ -797,7 +826,10 @@ class AISReview(object):
                 d.invert(substitute_fp=subf(d.time))
                 if d.altitude.size:
                     ii = int(
-                        round((float(d.time) - times[0]) / mex.ais.ais_spacing_seconds)
+                        round(
+                            (float(d.time) - times[0])
+                            / mex.ais.ais_spacing_seconds
+                        )
                     )
                     img[ii, :] = np.interp(
                         ranges,
@@ -846,7 +878,9 @@ class AISReview(object):
         #     + 1
         # )
         ranges = np.arange(80.0, 300.0, 1.0)
-        times = np.arange(self.extent[0], self.extent[1], mex.ais.ais_spacing_seconds)
+        times = np.arange(
+            self.extent[0], self.extent[1], mex.ais.ais_spacing_seconds
+        )
         img = np.zeros((len(times), len(ranges))) + np.nan
 
         for i, d in enumerate(self.digitization_list):
@@ -856,7 +890,10 @@ class AISReview(object):
                     # as it comes from invert, local values are first,
                     # peaks are last
                     ii = int(
-                        round((float(d.time) - times[0]) / mex.ais.ais_spacing_seconds)
+                        round(
+                            (float(d.time) - times[0])
+                            / mex.ais.ais_spacing_seconds
+                        )
                     )
                     img[ii, :] = np.interp(
                         ranges,
@@ -890,7 +927,9 @@ class AISReview(object):
                     #     print e
                     #     continue
 
-                    model_densities = self.ionosphere_model(ranges, np.deg2rad(sza))
+                    model_densities = self.ionosphere_model(
+                        ranges, np.deg2rad(sza)
+                    )
                     # img[ii, :] = np.log10(10.**img[ii,:] - model_densities)
                     img[ii, :] = 10.0 ** img[ii, :] - model_densities[::-1]
 
@@ -1114,7 +1153,9 @@ class AISReview(object):
         if ax is None:
             ax = plt.gca()
 
-        fp_local_list = [d for d in self.digitization_list if np.isfinite(d.fp_local)]
+        fp_local_list = [
+            d for d in self.digitization_list if np.isfinite(d.fp_local)
+        ]
 
         plt.sca(ax)
         mex.plot_planet(lw=3.0)
@@ -1185,9 +1226,9 @@ class AISReview(object):
                 #       f.fp_local_error/f.fp_local > 0.3
                 val[np.abs(self.t - t) < mex.ais.ais_spacing_seconds] = v
 
-            points = np.array([f_x(self.mso_pos), f_y(self.mso_pos)]).T.reshape(
-                -1, 1, 2
-            )
+            points = np.array(
+                [f_x(self.mso_pos), f_y(self.mso_pos)]
+            ).T.reshape(-1, 1, 2)
             segments = np.concatenate([points[:-1], points[1:]], axis=1)
             lc = LineCollection(
                 segments,
@@ -1298,9 +1339,9 @@ class AISReview(object):
             ]:
                 val[np.abs(self.t - t) < mex.ais.ais_spacing_seconds] = v
 
-            points = np.array([f_x(self.mso_pos), f_y(self.mso_pos)]).T.reshape(
-                -1, 1, 2
-            )
+            points = np.array(
+                [f_x(self.mso_pos), f_y(self.mso_pos)]
+            ).T.reshape(-1, 1, 2)
             segments = np.concatenate([points[:-1], points[1:]], axis=1)
             lc = LineCollection(
                 segments,
@@ -1332,7 +1373,8 @@ class AISReview(object):
     #         plt.sca(ax)
     #     try:
     #         mex.aspera.plot_ima_spectra(
-    #             self.extent[0], self.extent[1], ax=ax, verbose=self.verbose, **kwargs
+    #             self.extent[0], self.extent[1], ax=ax,
+    #             verbose=self.verbose, **kwargs
     #         )
     #     except Exception as e:
     #         print(e)
@@ -1346,7 +1388,8 @@ class AISReview(object):
     #         plt.sca(ax)
     #     try:
     #         mex.aspera.plot_els_spectra(
-    #             self.extent[0], self.extent[1], ax=ax, verbose=self.verbose, **kwargs
+    #             self.extent[0], self.extent[1], ax=ax,
+    #             verbose=self.verbose, **kwargs
     #         )
     #     except Exception as e:
     #         print(e)
@@ -1377,11 +1420,15 @@ class AISReview(object):
             axes.append(plt.subplot(g[i], sharex=prev))
             axes[i].set_xlim(self.extent[0], self.extent[1])
             axes[i].yaxis.set_major_locator(
-                mpl.ticker.MaxNLocator(prune="upper", nbins=5, steps=[1, 2, 5, 10])
+                mpl.ticker.MaxNLocator(
+                    prune="upper", nbins=5, steps=[1, 2, 5, 10]
+                )
             )
             loc = irftime.SpiceetLocator()
             axes[i].xaxis.set_major_locator(loc)
-            axes[i].xaxis.set_major_formatter(irftime.SpiceetFormatter(locator=loc))
+            axes[i].xaxis.set_major_formatter(
+                irftime.SpiceetFormatter(locator=loc)
+            )
 
             prev = axes[-1]
 
@@ -1393,7 +1440,9 @@ class AISReview(object):
         self.plot_ne(ax=next(axit))
         self.plot_timeseries(ax=next(axit))
 
-        self.plot_frequency_range(ax=next(axit), f_min=0.0, f_max=0.2, colorbar=True)
+        self.plot_frequency_range(
+            ax=next(axit), f_min=0.0, f_max=0.2, colorbar=True
+        )
         # self.plot_frequency_range(ax=axit.next(), f_min=0.2, f_max=0.5)
         self.plot_frequency(ax=next(axit), f=0.5)
         # self.plot_frequency(ax=axit.next(), f=0.75)
@@ -1430,7 +1479,9 @@ class AISReview(object):
             axes[i].set_xlim(self.extent[0], self.extent[1])
             loc = irftime.SpiceetLocator()
             axes[i].xaxis.set_major_locator(loc)
-            axes[i].xaxis.set_major_formatter(irftime.SpiceetFormatter(locator=loc))
+            axes[i].xaxis.set_major_formatter(
+                irftime.SpiceetFormatter(locator=loc)
+            )
 
         plt.annotate(
             "Orbit %d, plot start: %s, newest digitization: %s"
@@ -1526,7 +1577,9 @@ def main(
 
     try:
         print("DB: ", fname)
-        a = AISReview(orbit, debug=debug, db_filename=fname, fig=fig, verbose=verbose)
+        a = AISReview(
+            orbit, debug=debug, db_filename=fname, fig=fig, verbose=verbose
+        )
         a.main(**kwargs)
     except Exception as e:
         print("AISReview Failed: ", e)
@@ -1556,7 +1609,10 @@ def stacked_f_plots(
         gc.collect()
         fname = irfuplanets.config["mex"][
             "data_directory"
-        ] + "marsis/ais_digitizations/%05d/%05d.dig" % ((o // 1000) * 1000, o)
+        ] + "marsis/ais_digitizations/%05d/%05d.dig" % (
+            (o // 1000) * 1000,
+            o,
+        )
         try:
             a = AISReview(o, debug=True, db_filename=fname)
         except Exception as e:
@@ -1574,7 +1630,9 @@ def stacked_f_plots(
             axes.append(plt.subplot(g[i], sharex=prev))
             axes[i].set_xlim(a.extent[0], a.extent[1])
             axes[i].yaxis.set_major_locator(
-                mpl.ticker.MaxNLocator(prune="upper", nbins=5, steps=[1, 2, 5, 10])
+                mpl.ticker.MaxNLocator(
+                    prune="upper", nbins=5, steps=[1, 2, 5, 10]
+                )
             )
             axes[i].xaxis.set_major_locator(irftime.SpiceetLocator())
             axes[i].xaxis.set_major_formatter(irftime.SpiceetFormatter())

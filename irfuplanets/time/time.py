@@ -440,7 +440,12 @@ class Orbit(object):
 
     def __str__(self):
         daterep = (
-            lambda d: str(d) + " [" + utcstr(d, "C") + ", DOY=" + utcstr(d)[5:8] + "]\n"
+            lambda d: str(d)
+            + " ["
+            + utcstr(d, "C")
+            + ", DOY="
+            + utcstr(d)[5:8]
+            + "]\n"
         )
         val = repr(self) + "\n"
         val += "  Spacecraft = %s\n" % self.name

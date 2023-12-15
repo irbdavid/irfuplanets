@@ -107,7 +107,8 @@ def lpw_l2_load(
         # print year, month
         files.extend(
             http_manager.query(
-                "lpw/l2/%04d/%02d/mvn_lpw_l2_%s_*_v*_r*.cdf" % (year, month, kind),
+                "lpw/l2/%04d/%02d/mvn_lpw_l2_%s_*_v*_r*.cdf"
+                % (year, month, kind),
                 start=start,
                 finish=finish,
                 version_function=lambda x: (
@@ -126,7 +127,9 @@ def lpw_l2_load(
 
     # Check for duplicates:
     if len(files) != len(set(files)):
-        raise ValueError("Duplicates appeared in files to load: " + ", ".join(files))
+        raise ValueError(
+            "Duplicates appeared in files to load: " + ", ".join(files)
+        )
 
     if cleanup:
         print("LPW L2 cleanup complete")
@@ -276,7 +279,9 @@ def lpw_plot_spec(
     if norm is None:
         norm = LogNorm(1e-16, 1e-8)
 
-    img_obj = plt.pcolormesh(s["time"], s["freq"], s["spec"], cmap=cmap, norm=norm)
+    img_obj = plt.pcolormesh(
+        s["time"], s["freq"], s["spec"], cmap=cmap, norm=norm
+    )
 
     plt.yscale("log")
     # plt.xlim(t0, t1)

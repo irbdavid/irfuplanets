@@ -49,7 +49,8 @@ def load_swia_l2_summary(
     while t < finish:
         files.extend(
             http_manager.query(
-                "swi/l2/%04d/%02d/mvn_swi_l2_%s_*_v*_r*.cdf" % (year, month, kind),
+                "swi/l2/%04d/%02d/mvn_swi_l2_%s_*_v*_r*.cdf"
+                % (year, month, kind),
                 start=start,
                 finish=finish,
                 version_function=lambda x: (
@@ -69,7 +70,9 @@ def load_swia_l2_summary(
 
     # Check for duplicates:
     if len(files) != len(set(files)):
-        raise ValueError("Duplicates appeared in files to load: " + ", ".join(files))
+        raise ValueError(
+            "Duplicates appeared in files to load: " + ", ".join(files)
+        )
 
     if cleanup:
         print("SWIA L2 Cleanup complete")
@@ -130,8 +133,12 @@ def load_swia_l2_summary(
                 output["quality_flag"] = np.hstack(
                     (output["quality_flag"], c["quality_flag"])
                 )
-                output["density"] = np.hstack((output["density"], c["density"]))
-                output["velocity"] = np.hstack((output["velocity"], c["velocity"].T))
+                output["density"] = np.hstack(
+                    (output["density"], c["density"])
+                )
+                output["velocity"] = np.hstack(
+                    (output["velocity"], c["velocity"].T)
+                )
                 output["temperature"] = np.hstack(
                     (output["temperature"], c["temperature"].T)
                 )

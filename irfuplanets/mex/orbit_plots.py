@@ -5,7 +5,12 @@ import irfuplanets.mex as mex
 from irfuplanets.data import deg_unwrap
 from irfuplanets.planets.mars import constants
 from irfuplanets.planets.mars.field_models import plot_lat_lon_field
-from irfuplanets.plot import CircularLocator, make_colorbar_cax, map_along_line, ylabel
+from irfuplanets.plot import (
+    CircularLocator,
+    make_colorbar_cax,
+    map_along_line,
+    ylabel,
+)
 
 __author__ = "David Andrews"
 __copyright__ = "Copyright 2023, David Andrews"
@@ -128,7 +133,9 @@ def orbit_plots(
     plt.sca(ax)
 
     orbits = {}
-    props = dict(marker="None", hold=True, mec=None, linestyle="-", markeredgewidth=0.0)
+    props = dict(
+        marker="None", hold=True, mec=None, linestyle="-", markeredgewidth=0.0
+    )
     # props = dict(marker='o', hold=True,mec='None',
     #       line style='None',markeredgewidth=0.0)
 
@@ -284,7 +291,9 @@ def setup_lat_lon_ax(ax=None, label=True, tickspacing=30.0):
     ax.set_aspect("equal")
 
 
-def plot_surface_map(orbits, ax=None, param="time", cmap=None, norm=None, **kwargs):
+def plot_surface_map(
+    orbits, ax=None, param="time", cmap=None, norm=None, **kwargs
+):
     from matplotlib.cm import summer
 
     from irfuplanets.mex.ais import get_ais_index
@@ -300,7 +309,9 @@ def plot_surface_map(orbits, ax=None, param="time", cmap=None, norm=None, **kwar
     setup_lat_lon_ax(ax=ax)
 
     try:
-        plot_lat_lon_field(value="|B|", cax=make_colorbar_cax(half=True, upper=True))
+        plot_lat_lon_field(
+            value="|B|", cax=make_colorbar_cax(half=True, upper=True)
+        )
     except NotImplementedError:
         pass
 
