@@ -9,6 +9,7 @@ numpy>=1.26
 pre-commit
 scikit-image
 scipy
+skimage
 spiceypy
 xarray
 
