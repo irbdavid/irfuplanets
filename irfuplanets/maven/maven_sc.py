@@ -191,7 +191,9 @@ def unload_kernels():
         # without it), meaning that the latest.tls was updated if needs be
         # b) uptime for this instance is less than the lifetime of a tls kernel
         # (years?)
-        spiceypy.furnsh(irfuplanets.config["data_directory"] + "latest.tls")
+        spiceypy.furnsh(
+            irfuplanets.config["data_directory"] + "latest_leapseconds.tls"
+        )
 
         spiceypy.last_spice_time_window = "MVN:NONE_UNLOADED"
     except RuntimeError as e:

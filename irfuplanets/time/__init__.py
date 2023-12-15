@@ -1,3 +1,6 @@
+import spiceypy
+
+from irfuplanets.spice.update import check_update_lsk_kernel
 from irfuplanets.time.time import (
     CelsiusTime,
     Orbit,
@@ -50,3 +53,8 @@ __all__ = [
     "datetime64_to_spiceet",
     "spiceet_to_datetime64",
 ]
+
+# Load an initial leap seconds kernel, updating it if needed
+# Idea being, if later furnsh/kclear are called, you're on your own
+# to make sure that a LSK file is present.  Hard not to do so, in SPICE.
+spiceypy.furnsh(check_update_lsk_kernel())

@@ -15,17 +15,18 @@ path_to_config = pathlib.Path.home() / "irfuplanets.cfg"
 default_config_str = (
     """
 [irfuplanets]
-data_directory = /Users/dave/data
+data_directory = ~/data/
 
 [mex]
-data_directory = /Users/dave/data/mex/
+data_directory = ~/data/mex/
 
 [maven]
-data_directory = /Users/dave/data/maven/
-"""
-    "kernel_directory = /Users/dave/data/maven/spg/data/misc/"
+data_directory = ~/data/maven/
+kernel_directory = ~/data/maven/spg/data/misc/"""
     "spice/naif/MAVEN/kernels/"
 )
+
+default_config_str = default_config_str.replace("~", str(pathlib.Path.home()))
 
 
 def _load_config(path):
