@@ -1,0 +1,118 @@
+[build-system]
+requires = [
+    "setuptools>=42",
+    "wheel==0.38.1",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "irfuplanets"
+version = "1.0.0"
+description = "Some MEX and MAVEN Python Space Physics Utilities"
+readme = "README.md"
+authors = [{ name = "David Andrews", email = "david.andrews@irfu.se" }]
+license = { file = "LICENSE.txt" }
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Environment :: Other Environment",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft",
+    "Operating System :: Microsoft :: MS-DOS",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = [
+    "cdflib>=1.0.4",
+    "matplotlib>=3.5.2",
+    "numpy>=1.20.3,<1.25.0",
+    "scipy>=1.7.3",
+    "xarray>=0.20.1",
+]
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+dev = ["black", "pip-tools"]
+
+[project.urls]
+#homepage = ""
+#documentation = ""
+source = "https://github.com/irbdavid/irfuplanets"
+
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.package-data]
+"*" = ["*.json", "*.csv"]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore::RuntimeWarning",
+]
+
+[tool.black]
+py36 = true
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+
+  # The following are specific to Black, you probably don't want those.
+  | blib2to3
+  | tests/data
+)/'''
+
+[tool.isort]
+profile = "black"
+
+[tool.pylint."MESSAGES CONTROL"]
+disable = """
+    missing-module-docstring,
+    too-many-arguments,
+    too-many-locals,
+    too-many-lines,
+    too-many-statements,
+    too-many-branches,
+    too-many-nested-blocks,
+    invalid-name,
+    duplicate-code,
+    not-an-iterable,
+    fixme
+"""
+ignore = ""
+ignored-modules = "scipy,cdflib"
+
+[tool.bumpver]
+current_version = "1.0.0"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message  = "Bump version {old_version} -> {new_version}"
+commit          = true
+tag             = false
+push            = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
+"irfuplanets/__init__.py" = ["{version}", "Copyright 2023-YYYY"]

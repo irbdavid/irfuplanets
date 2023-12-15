@@ -1,0 +1,14 @@
+black
+cdflib
+ipympl
+ipywidgets
+isort
+jupyterlab
+matplotlib
+numpy>=1.26
+pre-commit
+scikit-image
+scipy
+spiceypy
+xarray
+

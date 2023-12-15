@@ -1,0 +1,24 @@
+docs/build/
+__pycache__
+*.pyc
+*~
+*.swp
+.coverage
+pyrfu.egg-info/
+build/
+dist/
+venv/
+
+# MacOS mess
+*.DS_Store
+
+# Added/ignored for workflow.
+# PyCharm uses .idea/
+.idea/
+
+# Ignore .ipynb_checkpoints
+*.ipynb_checkpoints
+
+# Ignore coverage report files
+.coverage*
+coverage.xml

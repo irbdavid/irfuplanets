@@ -1,0 +1,21 @@
+black
+cdflib==0.4.7
+coverage
+flake8
+gitchangelog
+ipympl
+ipywidgets
+isort
+isort
+jupyterlab
+matplotlib
+mkdocs
+mypy
+numpy
+# This requirements are for development and testing only, not for production.
+pytest
+pytest-cov
+scikit-image
+scipy
+spiceypy==5.1.1
+xarray
