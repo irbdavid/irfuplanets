@@ -108,7 +108,6 @@ def load_swia_l2_summary(
                 if output["energy"].shape != c["energy_spectra"].shape:
                     raise ValueError("Energy range has changed!")
 
-            c.close()
         output["def"] = output["def"][::-1, :]
 
     elif kind == "onboardsvymom":
@@ -143,12 +142,12 @@ def load_swia_l2_summary(
                     (output["temperature"], c["temperature"].T)
                 )
 
-            c.close()
-
     else:
         raise ValueError("Input kind='%s' not recognized" % kind)
 
-    output["time"] = cdflib.cdfepoch.to_datetime(output["time"], to_np=True)
+    output["time"] = cdflib.cdfepoch.to_datetime(
+        output["time"],
+    )
     output["time"] = datetime64_to_spiceet(output["time"])
 
     return output

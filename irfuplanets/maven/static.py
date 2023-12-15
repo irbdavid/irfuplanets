@@ -101,13 +101,13 @@ def load_static_l2(
             # print(c['eflux'].shape, c['energy'].shape, c['epoch'].shape)
             output["blocks"].append([c["epoch"], c["energy"], c["eflux"]])
 
-            c.close()
-
     else:
         raise ValueError("Input kind='%s' not recognized" % kind)
 
     for b in output["blocks"]:
-        b[0] = cdflib.cdfepoch.to_datetime(b[0], to_np=True)
+        b[0] = cdflib.cdfepoch.to_datetime(
+            b[0],
+        )
         b[0] = datetime64_to_spiceet(b[0])
 
     return output

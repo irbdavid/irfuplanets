@@ -159,7 +159,6 @@ def lpw_l2_load(
 
                 for v, i in zip(("ne", "te", "usc"), (0, 1, 2)):
                     output[v] = np.hstack((output[v], c["data"][:, i]))
-            c.close()
 
     elif kind == "wn":
         output = dict(time=None, ne=None)
@@ -177,7 +176,6 @@ def lpw_l2_load(
                 # for v, i in zip(('ne', 'te', 'usc'), (0,1,2)):
                 #     output[v] = np.hstack((output[v],
                 #   c.varget('data'][:,i])))
-            c.close()
 
     elif kind == "wspecact":
         output = dict(time=None, spec=None, freq=None)
@@ -192,7 +190,6 @@ def lpw_l2_load(
             else:
                 output["time"] = np.hstack((output["time"], c[time_key]))
                 output["spec"] = np.hstack((output["spec"], c["data"].T))
-            c.close()
 
         # print 'Warning: spectra output is not interpolated!'
 
@@ -210,7 +207,6 @@ def lpw_l2_load(
                 output["time"] = np.hstack((output["time"], c[time_key]))
                 output["spec"] = np.hstack((output["spec"], c["data"].T))
             # print 'Warning: spectra output is not interpolated!'
-            c.close()
 
     elif kind == "lpiv":
         output = dict(time=None, current=None, volt=None)
@@ -226,8 +222,6 @@ def lpw_l2_load(
                 output["current"] = np.hstack((output["current"], c["data"].T))
                 output["volt"] = np.hstack((output["volt"], c["volt"].T))
 
-            c.close()
-
     elif kind == "we12":
         output = dict(time=None, we12=None)
         for f in sorted(files):
@@ -240,12 +234,11 @@ def lpw_l2_load(
                 output["time"] = np.hstack((output["time"], c[time_key]))
 
                 output["we12"] = np.hstack((output["we12"], c["data"]))
-            c.close()
 
     else:
         raise ValueError("Input kind='%s' not recognized" % kind)
 
-    output["time"] = cdflib.cdfepoch.to_datetime(output["time"], to_np=True)
+    output["time"] = cdflib.cdfepoch.to_datetime(output["time"])
     output["time"] = datetime64_to_spiceet(output["time"])
 
     return output
