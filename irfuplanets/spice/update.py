@@ -63,6 +63,9 @@ def check_update_lsk_kernel():
 
     top_data_dir = irfuplanets.config["irfuplanets"]["data_directory"]
 
+    if not os.path.exists(top_data_dir):
+        os.makedirs(top_data_dir)
+
     lsk_filename = top_data_dir + "latest_leapseconds.tls"
 
     server = "https://naif.jpl.nasa.gov"
