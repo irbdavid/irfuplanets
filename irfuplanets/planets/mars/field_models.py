@@ -4,7 +4,7 @@ import pickle
 import matplotlib.pylab as plt
 import numpy as np
 import spiceypy
-from scipy.io.idl import readsav
+from scipy.io import readsav
 
 # Need to avoid this at module level:
 # import irfuplanets.mex as mex

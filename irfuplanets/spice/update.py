@@ -18,7 +18,15 @@ __email__ = "david.andrews@irfu.se"
 # https://archives.esac.esa.int/psa/ftp/MARS-EXPRESS/SPICE/MEX-E-M-SPICE-6-V2.0/DATA/
 
 
-def _wget(server, path, verbose=True, cut_dirs=True, test=False, cmd=None):
+def _wget(
+    server,
+    path,
+    verbose=True,
+    cut_dirs=True,
+    test=False,
+    cmd=None,
+    quota=None,
+):
     if cmd is None:
         cmd = "wget -m -nH -nv -np"
 
@@ -36,6 +44,9 @@ def _wget(server, path, verbose=True, cut_dirs=True, test=False, cmd=None):
 
     # if test:
     #     cmd += " --spider"
+
+    if quota is not None:
+        cmd += f" --quota={quota}"
 
     cmd += f" {server}{path}"
     print(cmd)
@@ -104,7 +115,7 @@ def check_update_lsk_kernel():
     return lsk_filename
 
 
-def update_mex(server=None, basepath=None, local=None, test=False):
+def update_mex(server=None, basepath=None, local=None, test=False, **kwargs):
     import irfuplanets
 
     orig_dir = os.getcwd()
@@ -132,15 +143,20 @@ def update_mex(server=None, basepath=None, local=None, test=False):
 
     for path, local_dir in ops:
         print(f"Updating {server}{path} -> {local_dir}")
+
+        if not os.path.exists(local_dir):
+            if not test:
+                os.makedirs(local_dir)
+
         try:
             orig_dir = os.getcwd()
             os.chdir(local_dir)
-            _wget(server, path, test=test)
+            _wget(server, path, test=test, **kwargs)
         finally:
             os.chdir(orig_dir)
 
 
-def update_maven(server=None, basepath=None, local=None, test=False):
+def update_maven(server=None, basepath=None, local=None, test=False, **kwargs):
     import irfuplanets
 
     orig_dir = os.getcwd()
@@ -170,10 +186,15 @@ def update_maven(server=None, basepath=None, local=None, test=False):
 
     for path, local_dir in ops:
         print(f"Updating {server}{path} -> {local_dir}")
+
+        if not os.path.exists(local_dir):
+            if not test:
+                os.makedirs(local_dir)
+
         try:
             orig_dir = os.getcwd()
             os.chdir(local_dir)
-            _wget(server, path, test=test)
+            _wget(server, path, test=test, **kwargs)
         finally:
             os.chdir(orig_dir)
 

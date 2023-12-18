@@ -7,7 +7,7 @@ import os
 
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.io.idl import readsav
+from scipy.io import readsav
 
 from irfuplanets.plot import CircularLocator, make_colorbar_cax
 

@@ -4,8 +4,9 @@ import matplotlib.pylab as plt
 import matplotlib.ticker
 import matplotlib.transforms
 import numpy as np
-from celsius import interp_safe
 from matplotlib.collections import LineCollection
+
+from irfuplanets.data import interp_safe
 
 __author__ = "David Andrews"
 __copyright__ = "Copyright 2023, David Andrews"
