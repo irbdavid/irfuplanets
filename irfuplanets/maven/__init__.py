@@ -29,10 +29,54 @@ __copyright__ = "Copyright 2023, David Andrews"
 __license__ = "MIT"
 __email__ = "david.andrews@irfu.se"
 
-DIRECTORY = irfuplanets.config["maven"]["kernel_directory"] + "spk/"
+stored_data = {}
+maven_http_manager = None
+
+if True:
+    print("Setting up SDC access (public)")
+    maven_http_manager = HTTP_Manager(
+        "http://lasp.colorado.edu/maven/sdc/public/data/sci/",
+        "",
+        "",
+        irfuplanets.config["maven"]["data_directory"],
+        verbose=False,
+    )
+
+# Note Dec. 2023: Need to sortout the authentication below
+if False:
+    print("Setting up SDC access (team)")
+    maven_http_manager = HTTP_Manager(
+        "http://lasp.colorado.edu/maven/sdc/team/sci/",
+        os.getenv("MAVENPFP_USER_PASS").split(":")[0],
+        os.getenv("MAVENPFP_USER_PASS").split(":")[1],
+        irfuplanets.config["maven"]["data_directory"],
+        verbose=False,
+    )
+
+# if os.getenv("MAVENPFP_USER_PASS") is None:  # Public access
+#     print("Setting up SDC access (public)")
+#     maven_http_manager = HTTP_Manager(
+#         "http://lasp.colorado.edu/maven/sdc/public/data/sci/",
+#         "",
+#         "",
+#         irfuplanets.config["maven"]["data_directory"],
+#         verbose=False,
+#     )
+# else:
+#     print("Setting up Berkeley access")
+#     maven_http_manager = HTTP_Manager(
+#         "https://lasp.colorado.edu/maven/sdc/team/data/sci/",
+#         os.getenv("MAVENPFP_USER_PASS").split(":")[0],
+#         os.getenv("MAVENPFP_USER_PASS").split(":")[1],
+#         irfuplanets.config["maven"]["data_directory"],
+#         verbose=False,
+#     )
+
 
 # Load Kernels
 load_kernels()
+
+DIRECTORY = irfuplanets.config["maven"]["kernel_directory"] + "spk/"
 
 # Read orbits
 orbits = OrbitDict()
@@ -64,31 +108,6 @@ if not orbits:
 #     orbits[k] = v
 
 print("Read information for %d orbits" % len(orbits))
-
-stored_data = {}
-
-if os.getenv("MAVENPFP_USER_PASS") is None:  # Public access
-    print("Setting up SDC access (public)")
-    raise NotImplementedError(
-        "URL broken, change to (??): "
-        "'http://sprg.ssl.berkeley.edu/data/maven/data/sci/'"
-    )
-    maven_http_manager = HTTP_Manager(
-        "http://lasp.colorado.edu/maven/sdc/public/data/sci/",
-        "",
-        "",
-        irfuplanets.config["maven"]["data_directory"],
-        verbose=False,
-    )
-else:
-    print("Setting up Berkeley access (private)")
-    maven_http_manager = HTTP_Manager(
-        "http://sprg.ssl.berkeley.edu/data/maven/data/sci/",
-        os.getenv("MAVENPFP_USER_PASS").split(":")[0],
-        os.getenv("MAVENPFP_USER_PASS").split(":")[1],
-        irfuplanets.config["maven"]["data_directory"],
-        verbose=False,
-    )
 
 print("MAVEN setup complete\n----")
 
