@@ -2,15 +2,12 @@
 import sys
 
 import matplotlib as mpl
-import matplotlib.cm
-import matplotlib.gridspec
 import matplotlib.pylab as plt
-import mex.ais as ais
-import mex.ais.aisreview
 import numpy as np
-from mex.ais import DigitizationDB, IonogramDigitization
 
+# import irfuplanets
 import irfuplanets.mex as mex
+import irfuplanets.mex.ais as ais
 import irfuplanets.time as irftime
 from irfuplanets.data import modpos
 from irfuplanets.planets.mars import constants
@@ -208,14 +205,14 @@ class AISTool(object):
         # else get the default for the orbit
         if self.load:
             if self._initial_digitization_db:
-                self.digitization_db = DigitizationDB(
+                self.digitization_db = ais.DigitizationDB(
                     filename=self._initial_digitization_db, verbose=True
                 )
             else:
-                self.digitization_db = DigitizationDB(orbit=self.orbit)
+                self.digitization_db = ais.DigitizationDB(orbit=self.orbit)
             self._digitization_saved = True
         else:
-            self.digitization_db = DigitizationDB(load=False)
+            self.digitization_db = ais.DigitizationDB(load=False)
             self._digitization_saved = False
         # Now we do some processing, generate a data cube for the orbit
         # and generate the timeseries
@@ -331,7 +328,7 @@ class AISTool(object):
 
             # if self.debug: print 'Found %d digitizations' % len(dig)
             if not dig:
-                dig = IonogramDigitization()
+                dig = ais.IonogramDigitization()
                 dig.time = self.current_ionogram.time
                 self.current_ionogram.digitization = dig
                 if auto:
@@ -578,7 +575,7 @@ class AISTool(object):
         # return
 
         if new_digitization:
-            self.current_ionogram.digitization = IonogramDigitization()
+            self.current_ionogram.digitization = ais.IonogramDigitization()
             self.message("Added new digitization")
 
         i = self.current_ionogram
@@ -1097,7 +1094,7 @@ class AISTool(object):
 
         # s = np.zeros((10,2))
         # s[:,1] = 1
-        # self.current_ionogram.data = morphology.binary_hit_or_miss(
+        # self.current_ionogram.data = scipy.ndimage.binary_hit_or_miss(
         #   self.current_ionogram.thresholded_data, s)
         self.current_ionogram.data = self.current_ionogram.thresholded_data
 
@@ -1107,7 +1104,7 @@ class AISTool(object):
         filename = self.digitization_db.filename
 
         del self.digitization_db
-        self.digitization_db = DigitizationDB(
+        self.digitization_db = ais.DigitizationDB(
             orbit=self.orbit, filename=filename, load=False, verbose=True
         )
 
@@ -1143,7 +1140,7 @@ class AISTool(object):
             print("-----")
             d.threshold_data()
             d.generate_binary_arrays()
-            d.digitization = IonogramDigitization()
+            d.digitization = ais.IonogramDigitization()
             d.digitization.time = d.time
             fp += p(d.calculate_fp_local())
             td += p(d.calculate_td_cyclotron())
@@ -1202,7 +1199,7 @@ class AISTool(object):
         )
 
     def key_d(self):
-        self.current_ionogram.digitization = IonogramDigitization(
+        self.current_ionogram.digitization = ais.IonogramDigitization(
             self.current_ionogram
         )
         self._digitization_saved = False

@@ -677,7 +677,7 @@ class AISReview(object):
             # for i in self.ionogram_list:
             #     i.threshold_data()
             #     plt.plot(float(i.time),
-            #       np.sum(morphology.binary_hit_or_miss(
+            #       np.sum(scipy.ndimage.binary_hit_or_miss(
             #               i.thresholded_data, s)),
             #         'go',ms=1.3)
 

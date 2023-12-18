@@ -5,7 +5,6 @@ import time as py_time
 
 import matplotlib as mpl
 import matplotlib.pylab as plt
-import mex
 import numpy as np
 import spiceypy
 
@@ -28,6 +27,9 @@ __email__ = "david.andrews@irfu.se"
 #     expanduser("~/Documents/Mars/"),
 #     "/homelocal/data_maris/mex_results/",
 # ]
+
+
+data_directory = irfuplanets.config["mex"]["data_directory"]
 
 
 class MEXException(Exception):
@@ -144,7 +146,7 @@ def load_kernels(
     spiceypy.kclear()
 
     try:
-        kernel_directory = mex.data_directory + "spice"
+        kernel_directory = data_directory + "spice"
         if verbose:
             print("LOAD_KERNELS: Registering kernels:")
 
@@ -440,7 +442,9 @@ def describe_func_call(f):
 
 def mex_mission_phase(time, long_name=False):
     """Return the mission phase designator for time"""
-    orbit = mex.orbits[time]
+    import irfuplanets.mex
+
+    orbit = irfuplanets.mex.orbits[time]
     if not orbit:
         return
 
@@ -517,7 +521,7 @@ def read_mex_orbits(fname):
 
 def read_all_mex_orbits(recompute=False, allow_write=True, verbose=False):
     require_write = False
-    fname = mex.data_directory + "orbits.pck"
+    fname = data_directory + "orbits.pck"
 
     if not recompute:
         try:
@@ -547,7 +551,7 @@ def read_all_mex_orbits(recompute=False, allow_write=True, verbose=False):
     for pattern in ["ORMF_*.ORB", "ORMM_MERGED_*.ORB"]:
         max_version = -1
         max_str = ""
-        files = glob.glob(mex.data_directory + "spice/orbnum/" + pattern)
+        files = glob.glob(data_directory + "spice/orbnum/" + pattern)
         for f in files:
             if int(f[-9:-4]) > max_version:
                 max_version = int(f[-9:-4])
@@ -598,6 +602,7 @@ def plot_mex_orbits_bar(
     labels=True,
 ):
     """docstring for plot_mex_orbits_bar"""
+    import irfuplanets.mex
 
     fig = plt.gcf()
     if ax is None:
@@ -625,7 +630,7 @@ def plot_mex_orbits_bar(
     y = np.array([1.0, 1.0, 0.0, 0.0, 1.0])
 
     orbit_count = 0
-    orbit_list = list(mex.orbits.values())
+    orbit_list = list(irfuplanets.mex.orbits.values())
     for o in orbit_list:
         if o.number % 2 == 0:
             continue

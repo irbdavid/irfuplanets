@@ -11,9 +11,8 @@ import urllib.request
 
 import matplotlib.pylab as plt
 import numpy as np
-import scipy.ndimage.morphology as morphology
+import scipy.ndimage
 import skimage.measure
-import skimage.morphology
 
 import irfuplanets
 import irfuplanets.mex as mex
@@ -1187,7 +1186,7 @@ class Ionogram(object):
             self.interpolate_frequencies()
         if not hasattr(self, "thresholded_data"):
             self.threshold_data(*args, **kwargs)
-        self._fp_data = morphology.binary_opening(
+        self._fp_data = scipy.ndimage.binary_opening(
             self.thresholded_data, structure=np.ones((20, 1))
         )
         (
@@ -1251,10 +1250,10 @@ class Ionogram(object):
 
         structure = np.zeros((2, 1))
         structure[1, 0] = 1
-        self._ion_data = morphology.binary_hit_or_miss(
+        self._ion_data = scipy.ndimage.binary_hit_or_miss(
             self.thresholded_data, structure1=structure
         )
-        self._cyc_data = morphology.binary_opening(
+        self._cyc_data = scipy.ndimage.binary_opening(
             self._ion_data, structure=np.ones((1, 3))
         )
 
