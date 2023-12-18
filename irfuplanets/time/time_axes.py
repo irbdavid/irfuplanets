@@ -47,9 +47,10 @@ def setup_time_axis(
     """
 
     if locator_kwargs is None:
-        locator_kwargs == {}
+        locator_kwargs = {}
+
     if formatter_kwargs is None:
-        formatter_kwargs == {}
+        formatter_kwargs = {}
 
     if ax is None:
         ax = plt.gca()
