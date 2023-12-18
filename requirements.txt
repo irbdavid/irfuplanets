@@ -8,7 +8,6 @@ matplotlib
 numpy>=1.26
 pre-commit
 scikit-image
-scikit-image
 scipy
 spiceypy
 xarray

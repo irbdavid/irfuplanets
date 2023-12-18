@@ -40,7 +40,7 @@ dependencies = [
     "scipy>=1.7.3",
     "xarray>=0.20.1",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 
 [project.optional-dependencies]
 dev = ["black", "pip-tools"]
