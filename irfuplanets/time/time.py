@@ -429,14 +429,14 @@ class Orbit(object):
         self.name = name
 
         # Assume we're provided with all parameters required
-        if apoapsis is not None:
-            self.apoapsis = apoapsis
-            self.periapsis = periapsis
-            self.start = start
-            self.finish = self.apoapsis
+        self.apoapsis = apoapsis
 
-            self.next = None
-            self.previous = None
+        self.periapsis = periapsis
+        self.start = start
+        self.finish = self.apoapsis
+
+        self.next = None
+        self.previous = None
 
     def __str__(self):
         daterep = (
