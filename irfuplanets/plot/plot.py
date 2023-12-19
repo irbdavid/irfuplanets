@@ -6,8 +6,6 @@ import matplotlib.transforms
 import numpy as np
 from matplotlib.collections import LineCollection
 
-from irfuplanets.data import interp_safe
-
 __author__ = "David Andrews"
 __copyright__ = "Copyright 2023, David Andrews"
 __license__ = "MIT"
@@ -160,21 +158,6 @@ def n_colors(n):
     return [tuple((x, x, x)) for x in c]
 
 
-# def ylabel(s, ax=None, offset=0.07, right=False, *args, **kwargs):
-def ylabel(s, ax=None, offset=0.07, right=False, *args, **kwargs):
-    """Y axis label at fixed offset, useful for stack plots"""
-    if ax is None:
-        ax = plt.gca()
-    plt.sca(ax)
-    plt.ylabel(s)
-    #
-    # xy = (-offset, 0.5)
-    # if right:
-    #     xy = (1. + offset, 0.5)
-    # ax.annotate(s, xy, xycoords='axes fraction', rotation='vertical',
-    #     ha='center', va='center', *args, **kwargs)
-
-
 def corner_label(n, ax=None, location="top left", color="black", **kwargs):
     """Label the corner of an axis.  n can be an iterator, or a string"""
     if hasattr(n, "next"):
@@ -239,6 +222,10 @@ class CircularLocator(mpl.ticker.Locator):
         self._units = units
         self._prune = prune
         self._nmax = nmax
+
+        if self._prune is None:
+            self._prune = "none"
+        self._prune = self._prune.lower()
 
         if self._units == "degrees":
             self._nice = [
@@ -377,10 +364,10 @@ def map_along_line(
     ax=None,
     cmap=None,
     norm=None,
-    time=None,
-    max_step=1.0,
-    missing=np.nan,
-    new_timebase=None,
+    # time=None,
+    # max_step=1.0,
+    # missing=np.nan,
+    # new_timebase=None,
     **kwargs,
 ):
     """Map some quantity q along x,y as a coloured line.
@@ -395,27 +382,28 @@ def map_along_line(
     if x.shape != q.shape:
         raise ValueError("Shape mismatch")
 
-    if time is not None:
-        if new_timebase is None:
-            new_timebase = np.arange(time[0], time[-1], np.min(np.diff(time)))
+    # if time is not None:
+    #     if new_timebase is None:
+    #         new_timebase = np.arange(time[0], time[-1], np.min
+    #               (np.diff(time)))
 
-        # Bit redundant
-        x = interp_safe(
-            new_timebase, time, x, max_step=max_step, missing=missing
-        )
-        y = interp_safe(
-            new_timebase, time, y, max_step=max_step, missing=missing
-        )
-        q = interp_safe(
-            new_timebase, time, q, max_step=max_step, missing=missing
-        )
+    #     # Bit redundant
+    #     x = interp_safe(
+    #         new_timebase, time, x, max_step=max_step, missing=missing
+    #     )
+    #     y = interp_safe(
+    #         new_timebase, time, y, max_step=max_step, missing=missing
+    #     )
+    #     q = interp_safe(
+    #         new_timebase, time, q, max_step=max_step, missing=missing
+    #     )
 
     points = np.array([x, y]).T.reshape(-1, 1, 2)
     segments = np.concatenate([points[:-1], points[1:]], axis=1)
     lc = LineCollection(segments, cmap=cmap, norm=norm, **kwargs)
 
     lc.set_array(q)
-    plt.gca().add_collection(lc)
+    ax.add_collection(lc)
 
     return lc
 
@@ -431,13 +419,36 @@ def add_labelled_bar(
     top=False,
     label="",
 ):
-    """Plot a line-axis below main axes, indicating quantity q.
+    """Plot an additional "axes" line (below) the main x-axis,
+    indicating values along it.
 
-    Args:
+    For example, "altitude", with values shown at the same points
+    as the main x-axis tick marks.
 
-    Example:
+    Parameters
+    ----------
+    time, q: array-like.
+        Values of q(time) will be indicated.
+    values_to_mark : list of q values, optional
+        Values of q to mark at, by default None
+        If None, values will be printed at the same locations as the
+        major tick marks for the main x-axis
+    ax : mpl axes, optional
+        defaults to `plt.gca()`
+    offset : float, optional
+        Offset below axis, by default 0.05
+    height : float, optional
+        Tick mark len, by default 0.0001
+    formatter : callable, optional
+        To format the tick values, by default None
+    top : bool, optional
+        Plot above the main axis?, by default False
+    label : str, optional
+        Label string, by default ""
 
-
+    Returns
+    -------
+    new_ax: Axes added to figure.
     """
 
     if ax is None:
@@ -463,7 +474,7 @@ def add_labelled_bar(
         )
     else:
         new_ax = fig.add_axes(
-            [p.x0, p.y0 - offset, p.x1 - p.x0, -height], yticks=[]
+            [p.x0, p.y0 - offset - height, p.x1 - p.x0, height], yticks=[]
         )
 
     plt.sca(new_ax)
@@ -511,7 +522,7 @@ def add_labelled_bar(
 
 def plot_planet(
     radius=1.0,
-    orientation="dawn",
+    orientation=None,
     ax=None,
     origin=(0.0, 0.0),
     scale=0.96,
@@ -521,18 +532,47 @@ def plot_planet(
     zorder=None,
     **kwargs,
 ):
-    """`orientation' specifies view direction, one of 'noon', 'midnight',
-    anything else being used as the terminator.  `scale' is used to adjust the
-    'white' polygon size in relation to the radius for aesthetics"""
+    """Draw a planet icon.
+
+    Parameters
+    ----------
+    radius : float, optional
+        radius, by default 1.0
+    orientation : str defining projection, optional
+        one of "dawn", "dusk", "noon", "midnight", by default "dawn"
+    ax : `mpl.Axes`, optional
+        by default `plt.gca()`
+    origin : tuple, optional
+        Center location, by default (0.0, 0.0)
+    scale : float, optional
+        How big is the central "white" patch, by default 0.96
+    edgecolor, facecolor : optional
+        valid mpl colors, by default "black" and "white"
+    resolution : int, optional
+        Num. points on the circumference, by default 256
+    zorder : number, optional
+        passed to mpl, by default -9999
+
+    Returns
+    -------
+    list of matplotlib patches added to `ax`
+
+    """
     if zorder is None:
         zorder = -9999
 
     if ax is None:
         ax = plt.gca()
 
+    if orientation is None:
+        orientation = "dawn"
+
     o = orientation.lower()
+    if o not in ("dawn", "noon", "midnight", "dusk"):
+        raise ValueError(f"Orientation '{orientation}' not recognized.")
+
     if o == "noon":
-        ax.add_patch(
+        p = ax.add_patch(
             plt.Circle(
                 origin,
                 radius,
@@ -543,9 +583,11 @@ def plot_planet(
                 **kwargs,
             )
         )
-        return
+        return [
+            p,
+        ]
     elif o == "midnight":
-        ax.add_patch(
+        p = ax.add_patch(
             plt.Circle(
                 origin,
                 radius,
@@ -555,7 +597,9 @@ def plot_planet(
                 **kwargs,
             )
         )
-        return
+        return [
+            p,
+        ]
 
     theta = np.linspace(0.0, np.pi, resolution) - np.pi / 2.0
     xy = np.empty((resolution, 2))
@@ -565,7 +609,7 @@ def plot_planet(
         xy[:, 0] = -1.0 * xy[:, 0]
 
     semi = plt.Polygon(xy, closed=True, color=facecolor, fill=True)
-    ax.add_patch(
+    p = ax.add_patch(
         plt.Circle(
             origin,
             radius,
@@ -575,7 +619,7 @@ def plot_planet(
             **kwargs,
         )
     )
-    ax.add_patch(semi)
+    return [ax.add_patch(semi), p]
 
 
 class DJAPage(object):

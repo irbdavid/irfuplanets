@@ -10,7 +10,6 @@ from irfuplanets.plot.plot import (
     n_random_colors,
     plot_planet,
     terminator,
-    ylabel,
 )
 
 __author__ = "David Andrews"
@@ -30,7 +29,6 @@ __all__ = [
     "n_random_colors",
     "plot_planet",
     "terminator",
-    "ylabel",
 ]
 
 paper_sizes = dict(A4=(8.27, 11.69), A3=(11.69, 16.54), A5=(5.83, 8.27))
