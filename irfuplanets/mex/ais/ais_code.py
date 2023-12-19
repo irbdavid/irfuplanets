@@ -1724,8 +1724,6 @@ class Ionogram(object):
             column = data[d, s] * np.exp(-(distance**2.0))
             column[np.abs(distance) > 2.0] = -1e99
 
-            # code_interact(locals())
-
             m = np.argmax(column)
             new_delays[i] = self.delays[d[m]]
             new_intensities[i] = column[m]
