@@ -1,4 +1,4 @@
-import os
+import pathlib
 
 import numpy as np
 import pytest
@@ -8,8 +8,8 @@ import irfuplanets.spice as sp
 
 def test_check_update_lsk_kernel():
     lsk_filename = sp.check_update_lsk_kernel()
-
-    assert os.path.exists(lsk_filename), "No LSK file made/found"
+    p = pathlib.Path(lsk_filename)
+    assert p.exists(), "No LSK file made/found"
 
 
 @pytest.mark.skip("Tested at s/c module level instead")
