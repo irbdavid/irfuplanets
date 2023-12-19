@@ -1,5 +1,5 @@
 import os
-import stat
+import pathlib
 import subprocess
 import time
 
@@ -73,18 +73,21 @@ def check_update_lsk_kernel():
     # generic_kernels/lsk/latest_leapseconds.tls
 
     top_data_dir = irfuplanets.config["irfuplanets"]["data_directory"]
+    top_data_dir = pathlib.Path(top_data_dir)
 
-    if not os.path.exists(top_data_dir):
-        os.makedirs(top_data_dir)
+    assert top_data_dir.is_dir(), f"Bad config data_directory: {top_data_dir}"
 
-    lsk_filename = top_data_dir + "latest_leapseconds.tls"
+    if not top_data_dir.exists:
+        top_data_dir.mkdir(parents=True)
+
+    lsk_filename = top_data_dir.absolute() / "latest_leapseconds.tls"
 
     server = "https://naif.jpl.nasa.gov"
     path = "/pub/naif/generic_kernels/lsk/latest_leapseconds.tls"
 
     time_now = time.time()
     try:
-        age = time_now - os.stat(lsk_filename)[stat.ST_MTIME]
+        age = time_now - lsk_filename.stat().st_mtime
         print(f"Leapsecond file is {int(age / 86400)} days old")
     except IOError:
         print("No sign of a local leapseconds kernel file.")
@@ -93,11 +96,11 @@ def check_update_lsk_kernel():
     if age > (86400 * 100):
         print(f"Obtaining newest leap-seconds kernel from {server}...")
 
-        orig_dir = os.getcwd()
+        orig_dir = None
 
         try:
-            orig_dir = os.getcwd()
-            os.chdir(top_data_dir)
+            orig_dir = pathlib.Path.cwd()
+            os.chdir(orig_dir)
             _wget(
                 server,
                 path,
@@ -115,13 +118,32 @@ def check_update_lsk_kernel():
     return lsk_filename
 
 
+def _update_sc(ops, server=None, test=False, **kwargs):
+    for path, local_dir in ops:
+        print(f"Updating {server}{path} -> {local_dir}")
+
+        if not local_dir.exists:
+            if not test:
+                local_dir.mkdir(parents=True)
+
+        try:
+            orig_dir = pathlib.Path.cwd()
+            os.chdir(local_dir)
+            _wget(server, path, test=test, **kwargs)
+        finally:
+            os.chdir(orig_dir)
+
+
 def update_mex(server=None, basepath=None, local=None, test=False, **kwargs):
     import irfuplanets
 
-    orig_dir = os.getcwd()
-
     if local is None:
-        local = irfuplanets.config["mex"]["data_directory"] + "spice/"
+        local = (
+            pathlib.Path(
+                irfuplanets.config["mex"]["data_directory"]
+            ).absolute()
+            / "spice/"
+        )
 
     if server is None:
         server = "https://archives.esac.esa.int"
@@ -130,39 +152,29 @@ def update_mex(server=None, basepath=None, local=None, test=False, **kwargs):
         basepath = "/psa/ftp/MARS-EXPRESS/SPICE/MEX-E-M-SPICE-6-V2.0/"
 
     ops = [
-        (basepath + f"DATA/{x}/", local + f"{x.lower()}/")
+        (basepath + f"DATA/{x}/", local / f"{x.lower()}/")
         for x in ("FK", "IK", "LSK", "PCK", "SCLK", "SPK", "DSK")
     ]
+
+    ops = []
 
     ops.append(
         (
             basepath + "EXTRAS/ORBNUM/",
-            local + "/orbnum/",
+            local / "orbnum/",
         ),
     )
 
-    for path, local_dir in ops:
-        print(f"Updating {server}{path} -> {local_dir}")
-
-        if not os.path.exists(local_dir):
-            if not test:
-                os.makedirs(local_dir)
-
-        try:
-            orig_dir = os.getcwd()
-            os.chdir(local_dir)
-            _wget(server, path, test=test, **kwargs)
-        finally:
-            os.chdir(orig_dir)
+    _update_sc(ops, server=server, test=test, **kwargs)
 
 
 def update_maven(server=None, basepath=None, local=None, test=False, **kwargs):
     import irfuplanets
 
-    orig_dir = os.getcwd()
-
     if local is None:
-        local = irfuplanets.config["maven"]["kernel_directory"]
+        local = pathlib.Path(
+            irfuplanets.config["maven"]["kernel_directory"]
+        ).absolute()
 
     if server is None:
         server = "https://naif.jpl.nasa.gov"
@@ -172,31 +184,19 @@ def update_maven(server=None, basepath=None, local=None, test=False, **kwargs):
         basepath = "/pub/naif/pds/pds4/maven/maven_spice"
 
     ops = [
-        (basepath + f"/spice_kernels/{x.lower()}/", local + f"{x.lower()}/")
+        (basepath + f"/spice_kernels/{x.lower()}/", local / f"{x.lower()}/")
         for x in ("FK", "IK", "LSK", "PCK", "SCLK", "SPK")
     ]
 
     ops.append(
         (
             basepath + "/miscellaneous/orbnum/",
-            local + "/spk/",
+            local / "spk/",
             # Because, that was how it used to work
         ),
     )
 
-    for path, local_dir in ops:
-        print(f"Updating {server}{path} -> {local_dir}")
-
-        if not os.path.exists(local_dir):
-            if not test:
-                os.makedirs(local_dir)
-
-        try:
-            orig_dir = os.getcwd()
-            os.chdir(local_dir)
-            _wget(server, path, test=test, **kwargs)
-        finally:
-            os.chdir(orig_dir)
+    _update_sc(ops, server=server, test=test, **kwargs)
 
 
 def update_all_kernels(spacecraft="ALL", **kwargs):
