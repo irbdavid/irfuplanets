@@ -33,17 +33,28 @@ def setup_time_axis(
     ax=None,
     xaxis=True,
     verbose=False,
+    calendar=True,
     locator_kwargs=None,
     formatter_kwargs=None,
 ):
     """Function that applies SPICEET based axis locator and labeller to the
-    current plot axis (default xaxis).
+    current plot axis (default xaxis)
 
-    Args:
-        ax: axes to work on, defaults to plt.gca() value
-        xaxis (bool): Work on x :ax.xaxis: if true, otherwise :ax.yaxis:
-        locator_kwargs: supplied to the creation of the locator object
-        formatter_kwargs: supplied to the creation of the formatter object
+    Parameters
+    ----------
+    ax : mpl Axes, optional
+        default to `plt.gca()`
+    xaxis : bool, optional
+        xaxis if True, otherwise yaxis, by default True
+    verbose : bool, optional
+        Shouty or not, by default False
+    calendar : bool, optional
+        Use Calendar dates, by default True
+        If False, will format using DOY.
+    locator_kwargs : dict, optional
+        passed to locator, by default None
+    formatter_kwargs : dict, optional
+        passed to formatter, by default None
     """
 
     if locator_kwargs is None:
@@ -51,6 +62,10 @@ def setup_time_axis(
 
     if formatter_kwargs is None:
         formatter_kwargs = {}
+
+    if calendar:
+        locator_kwargs["calendar"] = True
+        # formatter_kwargs['calendar'] = True
 
     if ax is None:
         ax = plt.gca()
