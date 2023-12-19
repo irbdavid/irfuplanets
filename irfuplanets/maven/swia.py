@@ -88,7 +88,7 @@ def load_swia_l2_summary(
             c = cdflib.CDF(f)
 
             if output["time"] is None:
-                output["time"] = c["time_unix"]
+                output["time"] = c["epoch"]
                 output["def"] = c["spectra_diff_en_fluxes"].T
 
                 # Some weird formatting here:
@@ -100,7 +100,7 @@ def load_swia_l2_summary(
                 )
                 output["energy"] = output["energy"][::-1]
             else:
-                output["time"] = np.hstack((output["time"], c["time_unix"]))
+                output["time"] = np.hstack((output["time"], c["epoch"]))
                 output["def"] = np.hstack(
                     (output["def"], c["spectra_diff_en_fluxes"].T)
                 )
@@ -122,13 +122,13 @@ def load_swia_l2_summary(
             c = cdflib.CDF(f)
 
             if output["time"] is None:
-                output["time"] = c["time_unix"]
+                output["time"] = c["epoch"]
                 output["quality_flag"] = c["quality_flag"]
                 output["density"] = c["density"]
                 output["velocity"] = c["velocity_mso"].T
                 output["temperature"] = c["temperature_mso"].T
             else:
-                output["time"] = np.hstack((output["time"], c["time_unix"]))
+                output["time"] = np.hstack((output["time"], c["epoch"]))
                 output["quality_flag"] = np.hstack(
                     (output["quality_flag"], c["quality_flag"])
                 )

@@ -91,7 +91,7 @@ def load_swea_l2_summary(
             c = cdflib.CDF(f)
 
             if output["time"] is None:
-                output["time"] = c["time_unix"]
+                output["time"] = c["epoch"]
                 output["def"] = c["diff_en_fluxes"].T
 
                 # Some weird formatting here:
@@ -100,7 +100,7 @@ def load_swea_l2_summary(
                 )
                 output["energy"] = output["energy"][::-1]
             else:
-                output["time"] = np.hstack((output["time"], c["time_unix"]))
+                output["time"] = np.hstack((output["time"], c["epoch"]))
                 output["def"] = np.hstack(
                     (output["def"], c["diff_en_fluxes"].T)
                 )
