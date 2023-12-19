@@ -12,7 +12,22 @@ For now, only directly from github:
 ```bash
 pip install git+https://github.com/irbdavid/irfuplanets.git
 
+
 ```
+
+## First Run
+
+At first run:
+
+```py
+import irfuplanets
+```
+
+will create a file `irfuplanets.cfg` in your home directory that will store some important paths.
+Default settings should be adjusted if you want data to get pushed elsewhere.
+
+
+
 
 ## Usage
 
@@ -28,10 +43,11 @@ pip install git+https://github.com/irbdavid/irfuplanets.git
     data = lpw.lpw_l2_load(kind="lpnt", start=start, finish=finish)
 
     plt.plot(data['time'], data['ne'])
-    irftime.setup_time_axis()
-
+    irftime.setup_time_axis(calendar=True)
 
 ```
+
+See also various notebooks in the [docs/examples](examples) folder.
 
 ## Development
 
