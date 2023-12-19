@@ -12,21 +12,6 @@ __email__ = "david.andrews@irfu.se"
 
 paper_sizes = dict(A4=(8.27, 11.69), A3=(11.69, 16.54), A5=(5.83, 8.27))
 
-datastore = dict()
-
-
-def clear_datastore():
-    global datastore
-    datastore = dict()
-
-
-def code_interact(local):
-    import code
-
-    print("Stopping...")
-    code.interact(local=local)
-    print("Resuming...")
-
 
 def deg_unwrap(data, discont=180.0):
     non_nan_inx = np.isfinite(data)
@@ -67,7 +52,7 @@ def remove_none_edge_intersecting(img, edge=0, width=1):
         for v in s_set:
             q = s == v
             if np.all(img[q]):
-                out[s == v] = 1
+                out[q] = 1
 
     return out
 
@@ -103,10 +88,31 @@ def interp_safe(
     right=np.nan,
     missing=np.nan,
 ):
-    """Interpolate, defaulting to using nans for unknowns.
+    """Interpolate, defaulting to using NaNs for unknowns.
 
-    Also fill result with nans if the gap between interpolation points and the
-    input is bigger than max_step"""
+    Also fill result with NaNs if the gap between interpolation points and the
+    input is bigger than max_step
+
+    Parameters
+    ----------
+    x_new, x_old, y_old: array-like
+        Passed to `np.interp`
+    max_step : float, optional
+        max spacing to interpolate over in x, by default 1.0
+    left, right : scalar, optional
+        Out of bounds values, by default np.nan
+    missing : scalar, optional
+        Fill value for gaps bigger than `max_step`, by default np.nan
+
+    Returns
+    -------
+    Interpolated values `y_new`
+
+    Raises
+    ------
+    ValueError
+        If no interpolation is possible.
+    """
 
     y_new = np.interp(x_new, x_old, y_old, left=left, right=right)
 
@@ -122,7 +128,19 @@ def interp_safe(
 
 
 def lat_lon_distance(p1, p2, radius):
-    """p1, p2 are points (lat, lon) in degrees.  Distance returned"""
+    """Haversine distance between two points on a sphere
+
+    Parameters
+    ----------
+    p1, p2 : two points, (latitude, longitude), in degrees
+    radius : scalar
+        Radius of the sphere
+
+    Returns
+    -------
+        Distance
+    """
+
     lat_1, lon_1 = np.deg2rad(np.array(p1))
     lat_2, lon_2 = np.deg2rad(np.array(p2))
     q = (
@@ -245,6 +263,8 @@ def nice_range(x, p=5.0):
 
 
 def print_call(f):
+    """Wrapper to document calling of a function `f`"""
+
     def fin(*args, **kwargs):
         print("Calling " + f.__name__)
         return f(*args, **kwargs)
@@ -253,7 +273,7 @@ def print_call(f):
 
 
 def bin_2d(x, y, z=None, xbins=None, ybins=None, func=None, background=None):
-    """2-D processing (binning) of data, using np.digitize.
+    """2-D processing (binning) of data, using `np.digitize`.
     Bins from
         (x0, ..., xM), (y0, ..., yN),
     returned image has dimension
@@ -261,6 +281,26 @@ def bin_2d(x, y, z=None, xbins=None, ybins=None, func=None, background=None):
     Bins therefore specify a closed interval.
 
     Nans are not handled, so that they can be dealt with in the func.
+
+    Parameters
+    ----------
+    x, y: one-d arrays of positions
+    z : 1d array, optional
+        Value (weight) at each location, by default None
+        (Mathematically: `np.ones()` of `len(x)`)
+    xbins, ybins : arrays, optional
+        bin boundaries, length N, such that bin_i = [xbins[i],xbins[i+1]],
+        by default None
+    func : Callable, optional
+        How to handle the points in each bin (z values or), by default `np.sum`
+        to count the number of points, or sum up weights.
+    background : scalar, optional
+        Missing values, by default `np.nan`
+
+    Returns
+    -------
+    2d-array of binned values
+
     """
 
     if background is None:
