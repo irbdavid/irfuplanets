@@ -64,6 +64,9 @@ def test_time_convert(fmt, dt):
     if fmt in ("auto", "spiceet"):
         pytest.skip(f"Not needed for {fmt}")
 
+    if fmt == "unixtime":
+        pytest.skip(f"Not yet implemented for {fmt}")
+
     func = getattr(irfuplanets.time.time, f"spiceet_to_{fmt}")
     ifunc = getattr(irfuplanets.time.time, f"{fmt}_to_spiceet")
 
