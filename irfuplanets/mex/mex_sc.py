@@ -523,6 +523,9 @@ def read_all_mex_orbits(recompute=False, allow_write=True, verbose=False):
     require_write = False
     fname = data_directory + "orbits.pck"
 
+    if not os.path.exists(fname):
+        recompute = True
+
     if not recompute:
         try:
             age = (py_time.time() - os.stat(fname).st_mtime) / 86400
