@@ -5,12 +5,7 @@ import irfuplanets.mex as mex
 from irfuplanets.data import deg_unwrap
 from irfuplanets.planets.mars import constants
 from irfuplanets.planets.mars.field_models import plot_lat_lon_field
-from irfuplanets.plot import (
-    CircularLocator,
-    make_colorbar_cax,
-    map_along_line,
-    ylabel,
-)
+from irfuplanets.plot import CircularLocator, make_colorbar_cax, map_along_line
 
 __author__ = "David Andrews"
 __copyright__ = "Copyright 2023, David Andrews"
@@ -202,7 +197,6 @@ def mso_orbit(orbit_number, res=60):
 
     pos = mex.mso_position(et) / constants.mars_mean_radius_km
     lims = (-3, 3)
-    off = 0.2
     plt.rcParams["font.size"] = 8
 
     phi = np.linspace(-np.pi, np.pi, 100)
@@ -216,7 +210,7 @@ def mso_orbit(orbit_number, res=60):
         if bs:
             plt.plot(x, y, "k--")
         plt.xlabel(xn + r"$ / R_M$")
-        ylabel(yn + r"$ / R_M$", offset=off)
+        plt.ylabel(yn + r"$ / R_M$")
         plt.xlim(*lims)
         plt.ylim(*lims)
         plt.gca().add_patch(plt.Circle((0.0, 0.0), 1.0, fill=False))
