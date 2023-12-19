@@ -61,10 +61,7 @@ fmts = [f.lower() for f in VALID_FORMATS]
 def test_time_convert(fmt, dt):
     t = 0.0 + dt
 
-    if fmt == "auto":
-        pytest.skip(f"Not needed for {fmt}")
-
-    if fmt == "spiceet":
+    if fmt in ("auto", "spiceet"):
         pytest.skip(f"Not needed for {fmt}")
 
     func = getattr(irfuplanets.time.time, f"spiceet_to_{fmt}")
