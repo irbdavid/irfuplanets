@@ -21,14 +21,9 @@ from irfuplanets.planets.mars.chapman import Morgan2008ChapmanLayer
 from irfuplanets.planets.mars.field_models import CainMarsFieldModel
 
 __author__ = "David Andrews"
-__copyright__ = "Copyright 2015, David Andrews"
-__credits__ = ["David Andrews, Olivier Witasse"]
+__copyright__ = "Copyright 2023, David Andrews"
 __license__ = "MIT"
-__version__ = "0.1"
-__maintainer__ = "David Andrews"
 __email__ = "david.andrews@irfu.se"
-__status__ = "Development"
-
 
 mars_mean_radius_km = constants.mars_mean_radius_km
 
@@ -1514,9 +1509,9 @@ class AISReview(object):
 
         if show:
             plt.show()
-        else:
-            plt.close(fig)
-            plt.close("all")
+        # else:
+        #     plt.close(fig)
+        #     plt.close("all")
 
         if along_orbit:
             # fig = plt.figure()
@@ -1546,9 +1541,9 @@ class AISReview(object):
 
             if show:
                 plt.show()
-            else:
-                plt.close(fig)
-                plt.close("all")
+            # else:
+            #     plt.close(fig)
+            #     plt.close("all")
 
         # if save:
         #     del self

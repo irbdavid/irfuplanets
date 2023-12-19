@@ -121,23 +121,21 @@ def plot_bs(resolution=256, model="vignes00", ax=None, zorder=None, **kwargs):
 
 
 def orbit_plots(
-    orbit_list=[8020, 8021, 8022, 8023, 8024, 8025], resolution=200, ax=None
+    orbit_list=[8020, 8021, 8022, 8023, 8024, 8025], resolution=30.0, ax=None
 ):
     if ax is None:
         ax = plt.gca()
     plt.sca(ax)
 
     orbits = {}
-    props = dict(
-        marker="None", hold=True, mec=None, linestyle="-", markeredgewidth=0.0
-    )
+    props = dict(marker="None", mec=None, linestyle="-", markeredgewidth=0.0)
     # props = dict(marker='o', hold=True,mec='None',
     #       line style='None',markeredgewidth=0.0)
 
     for orbit in orbit_list:
         orbit_t = mex.orbits[orbit]
         print(orbit, orbit_t.start, orbit_t.finish)
-        t = np.linspace(orbit_t.start, orbit_t.finish, resolution)
+        t = np.arange(orbit_t.start, orbit_t.finish, resolution)
         pos = mex.iau_pgr_alt_lat_lon_position(t)
         # orbits[orbit] = dict(lat = np.rad2deg(pos[2]),
         #           lon = np.rad2deg(np.unwrap(pos[1])),
@@ -353,7 +351,7 @@ def plot_surface_map(
     cmap = summer
     lc = None
 
-    lc_kw = dict(cmap=cmap, norm=norm, linewidths=4, max_step=10.0)
+    lc_kw = dict(cmap=cmap, norm=norm, linewidths=4, capstyle="round")
 
     for gg in g:
         for i in (-1.0, 0.0, 1.0):
@@ -362,7 +360,7 @@ def plot_surface_map(
                     gg["iau_pos"][2, :] + i * 360.0,
                     gg["iau_pos"][1, :],
                     gg["sza"],
-                    time=gg["time"],
+                    # time=gg["time"],
                     **lc_kw,
                 )
             if param == "time":
@@ -370,7 +368,7 @@ def plot_surface_map(
                     gg["iau_pos"][2, :] + i * 360.0,
                     gg["iau_pos"][1, :],
                     gg["time"],
-                    time=gg["time"],
+                    # time=gg["time"],
                     **lc_kw,
                 )
             if param == "alt":
@@ -378,7 +376,7 @@ def plot_surface_map(
                     gg["iau_pos"][2, :] + i * 360.0,
                     gg["iau_pos"][1, :],
                     gg["iau_pos"][0, :],
-                    time=gg["time"],
+                    # time=gg["time"],
                     **lc_kw,
                 )
 

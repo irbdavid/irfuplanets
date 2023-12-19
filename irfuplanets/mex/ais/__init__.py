@@ -35,9 +35,8 @@ from irfuplanets.mex.ais.aistool import AISTool
 # import aisworkflow
 
 __author__ = "David Andrews"
-__copyright__ = "Copyright 2015, David Andrews"
+__copyright__ = "Copyright 2023, David Andrews"
 __license__ = "MIT"
-__version__ = "1.0"
 __email__ = "david.andrews@irfu.se"
 
 

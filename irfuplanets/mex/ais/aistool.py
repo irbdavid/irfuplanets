@@ -14,13 +14,10 @@ from irfuplanets.planets.mars import constants
 from irfuplanets.planets.mars.chapman import Morgan2008ChapmanLayer
 
 __author__ = "David Andrews"
-__copyright__ = "Copyright 2015, David Andrews"
-__credits__ = ["David Andrews"]
+__copyright__ = "Copyright 2023, David Andrews"
 __license__ = "MIT"
-__version__ = "0.1"
-__maintainer__ = "David Andrews"
 __email__ = "david.andrews@irfu.se"
-__status__ = "Development"
+__version__ = 1.0
 
 ais_tool_instance = None
 
@@ -1001,6 +998,7 @@ class AISTool(object):
                     return
 
     def key_t(self, retain=False):
+        """Start tracing"""
         self.tracing_status_retain = retain
         if retain and self.status == "tracing":
             self.set_status(None)
@@ -1008,6 +1006,7 @@ class AISTool(object):
         self.set_status("tracing")
 
     def key_w(self):
+        """Start selecting plasma lines"""
         if self.status == "plasma_lines":
             self.set_status(None)
             # if self.debug: print 'Starting plasma lines'
@@ -1017,6 +1016,7 @@ class AISTool(object):
         self.update()
 
     def key_c(self):
+        """Start selecting cyclotron lines"""
         if self.status == "cyclotron_lines":
             self.set_status(None)
         else:
@@ -1026,16 +1026,20 @@ class AISTool(object):
         self.update()
 
     def key_o(self):
+        """Start entering a new orbit"""
         self.status = "orbit"
         self.new_orbit = []
 
     def key_n(self):
+        """Go to next ionogram"""
         self.set_ionogram("next")
 
     def key_p(self):
+        """Go to previous ionogram"""
         self.set_ionogram("previous")
 
     def key_1(self):
+        """Show binary image (cyclotron mode)"""
         if not hasattr(self.current_ionogram, "_cyc_data"):
             self.current_ionogram.generate_binary_arrays()
 
@@ -1049,6 +1053,7 @@ class AISTool(object):
         self.update()
 
     def key_2(self):
+        """Show binary image (ionosphere mode)"""
         if not hasattr(self.current_ionogram, "_ion_data"):
             self.current_ionogram.generate_binary_arrays()
 
@@ -1062,6 +1067,7 @@ class AISTool(object):
         self.update()
 
     def key_3(self):
+        """Show binary image (plasma line mode)"""
         if not hasattr(self.current_ionogram, "_fp_data"):
             self.current_ionogram.generate_binary_arrays()
 
@@ -1080,12 +1086,14 @@ class AISTool(object):
         self.update()
 
     def key_4(self):
+        """Show original ionogram image"""
         if hasattr(self.current_ionogram, "_old_data"):
             self.current_ionogram.data = self.current_ionogram._old_data
             del self.current_ionogram._old_data
             self.update()
 
     def key_5(self):
+        """Show thresholded ionogram image"""
         if not hasattr(self.current_ionogram, "thresholded_data"):
             self.current_ionogram.threshold_data()
 
@@ -1099,6 +1107,7 @@ class AISTool(object):
         self.current_ionogram.data = self.current_ionogram.thresholded_data
 
     def key_q(self):
+        """Automatically process whole orbit"""
         # self.message('Q disabled!!')
         # return
         filename = self.digitization_db.filename
@@ -1158,6 +1167,7 @@ class AISTool(object):
         self.digitization_db.write()
 
     def key_f(self):
+        """Pick new frequency to display"""
         if self.get_status() is not None:
             if self.debug:
                 print("Waiting for status None")
@@ -1165,27 +1175,35 @@ class AISTool(object):
             self.status = "pick_frequency"
 
     def key_s(self):
+        """Save current digitization"""
         self.save_current_digitization()
 
     def key_u(self):
+        """Update plot"""
         self.update()
 
     def key_right(self):
+        """Alias for key:n"""
         self.key_n()
 
     def key_left(self):
+        """Alias for key:p"""
         self.key_p()
 
     def key_b(self):
+        """Toggle browse mode (?)"""
         self.browsing = not self.browsing
 
     def key_a(self):
+        """Auto fit (?)"""
         self.auto_fit()
 
     def key_g(self):
+        """Select ground delay"""
         self.set_status("ground")
 
     def key_h(self):
+        """Histogram of return power"""
         if self._histogram_figure_number is None:
             plt.figure(self._histogram_figure_number)
             plt.clf()
@@ -1199,12 +1217,14 @@ class AISTool(object):
         )
 
     def key_d(self):
+        """New digitization"""
         self.current_ionogram.digitization = ais.IonogramDigitization(
             self.current_ionogram
         )
         self._digitization_saved = False
 
     def key_m(self):
+        """Minimum interaction mode on/off"""
         # Toggle on/off
         self.minimum_interaction_mode = not self.minimum_interaction_mode
         print("Minimum interaction mode = %s" % self.minimum_interaction_mode)
@@ -1215,6 +1235,8 @@ class AISTool(object):
             self.minimum_interaction_mode_counter = -1
 
     def key_enter(self):
+        """In minimum interaction mode, hit enter at each step to go through:
+        a) fp local selecting, tracing, cyclotron, save and next."""
         if not self.minimum_interaction_mode:
             self.minimum_interaction_mode_counter = 0
             self.minimum_interaction_mode = True
@@ -1255,9 +1277,11 @@ class AISTool(object):
         return self
 
     def key_space(self):
+        """Alias for key:n"""
         self.key_n()
 
     def key_0(self):
+        """Plot to file, the current ionogram"""
         fig = plt.figure()
         ax = plt.subplot(111)
         self.current_ionogram.plot(
@@ -1278,11 +1302,14 @@ class AISTool(object):
         plt.close(fig)
 
     def key_r(self):
+        """Refine manual trace based on binary processing"""
         self.message(
             self.current_ionogram.refine_trace()
         )  # Will operate on d as well
 
     def key_i(self):
+        """Print information"""
+
         print("----------------")
         print("Current ionogram:")
         print(self.current_ionogram)
@@ -1292,6 +1319,7 @@ class AISTool(object):
         print("----------------")
 
     def key_v(self):
+        """Plot out to pdf an AISReview"""
         self.key_s()
         mex.ais.aisreview.main(
             self.orbit,
@@ -1301,6 +1329,12 @@ class AISTool(object):
             save=True,
             figurename="tmp.pdf",
         )
+
+    def print_help(self):
+        for s in sorted(dir(self)):
+            if s.startswith("key_"):
+                f = getattr(self, s, "NO DOC")
+                print(f"{s.strip('key_')}: {f.__doc__}")
 
 
 if __name__ == "__main__":
