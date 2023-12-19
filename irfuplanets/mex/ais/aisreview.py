@@ -252,7 +252,7 @@ class AISReview(object):
         # plt.vlines(self.ionogram_list[0].time,
         #  self.extent[2], self.extent[3], 'r')
         if label:
-            irfplot.ylabel("f / MHz")
+            plt.ylabel("f / MHz")
 
         if colorbar:
             old_ax = plt.gca()
@@ -310,7 +310,7 @@ class AISReview(object):
         plt.xlim(freq_extent[0], freq_extent[1])
         plt.ylim(freq_extent[2], freq_extent[3])
         # plt.vlines(i.time,freq_extent[2],freq_extent[3], 'r')
-        irfplot.ylabel(r"$\tau_D / ms$" "\n" "%.1f MHz" % f)
+        plt.ylabel(r"$\tau_D / ms$" "\n" "%.1f MHz" % f)
         # plt.annotate('f = %.1f MHz' % f, (0.02, 0.9), xycoords='axes
         #    fraction', color='grey', verticalalignment='top',
         #  fontsize='small')
@@ -383,7 +383,7 @@ class AISReview(object):
         plt.xlim(freq_extent[0], freq_extent[1])
         plt.ylim(freq_extent[2], freq_extent[3])
         # plt.vlines(i.time,freq_extent[2],freq_extent[3], 'r')
-        irfplot.ylabel(r"$\tau_D / ms$" "\n" "%.1f-%.1f MHz" % (f_min, f_max))
+        plt.ylabel(r"$\tau_D / ms$" "\n" "%.1f-%.1f MHz" % (f_min, f_max))
         # plt.annotate('f = %.1f - %.1f MHz' % (f_min, f_max), (0.02, 0.9),
         # xycoords='axes fraction',
         # color='grey', verticalalignment='top', fontsize='small')
@@ -472,7 +472,7 @@ class AISReview(object):
         ax.set_xlim(self.extent[0], self.extent[1])
         ax.xaxis.set_major_locator(irftime.SpiceetLocator())
 
-        irfplot.ylabel(r"Alt./km")
+        plt.ylabel(r"Alt./km")
         if annotate:
             plt.annotate(
                 "f = %.1f MHz" % f,
@@ -569,7 +569,7 @@ class AISReview(object):
                 )
 
         if label:
-            irfplot.ylabel(r"$\mathrm{|B|/nT}$")
+            plt.ylabel(r"$\mathrm{|B|/nT}$")
         plt.ylim(0.0, 200)
 
     def plot_ne(
@@ -668,7 +668,7 @@ class AISReview(object):
         plt.ylim(11.0, 1.1e5)
 
         if label:
-            # irfplot.ylabel(r'$\mathrm{n_e / cm^{-3}}$')
+            # plt.ylabel(r'$\mathrm{n_e / cm^{-3}}$')
             plt.ylabel(r"n$_e$ / cm$^{-3}$")
 
             # plt.twinx()
@@ -714,7 +714,7 @@ class AISReview(object):
                     color=true_color,
                     ms=self.marker_size,
                 )
-        irfplot.ylabel(r"$h_{max} / km$")
+        plt.ylabel(r"$h_{max} / km$")
         plt.ylim(0o1, 249)
 
     def plot_peak_density(self, fmt="k.", labels=True, ax=None, **kwargs):
@@ -733,7 +733,7 @@ class AISReview(object):
                 plt.plot(d.time, d.density[-1], fmt, **kwargs)
 
         if labels:
-            irfplot.ylabel(r"$n_{e,max} / cm^{-3}$")
+            plt.ylabel(r"$n_{e,max} / cm^{-3}$")
         ax.set_yscale("log")
         plt.ylim(1e4, 5e5)
 
@@ -752,7 +752,7 @@ class AISReview(object):
             )
         plt.plot(t, dnew)
 
-        irfplot.ylabel(r"$\Delta\tau_D$ / ms")
+        plt.ylabel(r"$\Delta\tau_D$ / ms")
 
     def plot_profiles(
         self,
@@ -856,7 +856,7 @@ class AISReview(object):
             cmap=cmap,
         )
 
-        irfplot.ylabel("alt / km")
+        plt.ylabel("alt / km")
 
         old_ax = plt.gca()
         plt.colorbar(
@@ -965,7 +965,7 @@ class AISReview(object):
             vmax=1e5,
         )
 
-        irfplot.ylabel("alt. / km")
+        plt.ylabel("alt. / km")
 
         old_ax = plt.gca()
         plt.colorbar(
@@ -1056,7 +1056,7 @@ class AISReview(object):
 
         plt.ylim(2e14, 9e16)
         plt.yscale("log")
-        irfplot.ylabel(r"$TEC / m^{-2}$")
+        plt.ylabel(r"$TEC / m^{-2}$")
 
     def generate_position(self):
         if not hasattr(self, "t"):
@@ -1086,7 +1086,7 @@ class AISReview(object):
         plt.sca(ax)
         self.generate_position()
         plt.plot(self.t, self.iau_pos[0] / mars_mean_radius_km, fmt, **kwargs)
-        irfplot.ylabel(r"$r / R_M$")
+        plt.ylabel(r"$r / R_M$")
 
     def plot_altitude(self, ax=None, label=True, fmt="k-", **kwargs):
         if ax is None:
@@ -1095,7 +1095,7 @@ class AISReview(object):
         self.generate_position()
         plt.plot(self.t, self.iau_pos[0] - mars_mean_radius_km, fmt, **kwargs)
         if label:
-            irfplot.ylabel("h / km")
+            plt.ylabel("h / km")
 
     def plot_lat(self, ax=None, label=True, fmt="k-", **kwargs):
         if ax is None:
@@ -1105,7 +1105,7 @@ class AISReview(object):
         self.generate_position()
         plt.plot(self.t, self.iau_pos[1], fmt, **kwargs)
         if label:
-            irfplot.ylabel(r"$\lambda$")
+            plt.ylabel(r"$\lambda$")
         plt.ylim(-90.0, 90.0)
 
     def plot_lon(self, ax=None, label=True, fmt="k-", **kwargs):
@@ -1118,7 +1118,7 @@ class AISReview(object):
         for i in [-1, 0, 1]:
             plt.plot(self.t, v + i * 360, fmt, **kwargs)
         if label:
-            irfplot.ylabel(r"$\varphi$")
+            plt.ylabel(r"$\varphi$")
         plt.ylim(0.0, 360.0)
 
     def plot_sza(self, ax=None, label=True, fmt="k-", **kwargs):
@@ -1129,7 +1129,7 @@ class AISReview(object):
         self.generate_position()
         plt.plot(self.t, self.sza, fmt, **kwargs)
         if label:
-            irfplot.ylabel(r"$SZA / deg$")
+            plt.ylabel(r"$SZA / deg$")
         plt.ylim(0.0, 180.0)
 
     def make_axis_circular(self, ax):
@@ -1655,7 +1655,7 @@ def stacked_f_plots(
         # plt.plot(a.t, b[0], "r-")
         # plt.plot(a.t, b[1], "g-")
         # plt.plot(a.t, b[2], "b-")
-        irfplot.ylabel(r"$B_{SC} / nT$")
+        plt.ylabel(r"$B_{SC} / nT$")
 
         plt.sca(next(ax))
         ion_pos = a.iau_pos
@@ -1665,7 +1665,7 @@ def stacked_f_plots(
         plt.plot(a.t, bion[0], "r-")
         plt.plot(a.t, bion[1], "g-")
         plt.plot(a.t, bion[2], "b-")
-        irfplot.ylabel(r"$B_{150} / nT$")
+        plt.ylabel(r"$B_{150} / nT$")
 
         for i in range(n - 1):
             ax = axes[i]
