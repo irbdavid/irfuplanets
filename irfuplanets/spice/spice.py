@@ -5,6 +5,7 @@ import glob
 import json
 import os
 import re
+from functools import wraps
 
 import numpy as np
 import spiceypy
@@ -19,6 +20,7 @@ def spice_wrapper(f):
     """Wrapper for a function :f: that will make necessary multiple calls for
     vectorized inputs."""
 
+    @wraps(f)
     def inner(time):
         if hasattr(time, "__iter__"):
             return np.array([f(t) for t in time]).T
