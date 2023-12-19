@@ -4,7 +4,14 @@ import pytest
 
 IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
-pytest.importorskip("irfuplanets.mex")
+# pytest.importorskip("irfuplanets.mex")
+
+
+def test_spice_update():
+    from irfuplanets.spice import update_all_kernels
+
+    # update_all_kernels("MAVEN", quota="5m")
+    update_all_kernels("MEX", test=True)
 
 
 @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="No data.")
