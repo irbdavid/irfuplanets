@@ -84,7 +84,7 @@ def check_update_lsk_kernel():
     # assert top_data_dir.is_dir(), \
     #       f"Bad config data_directory: {top_data_dir}"
 
-    if not top_data_dir.exists:
+    if not top_data_dir.exists():
         top_data_dir.mkdir(parents=True)
 
     lsk_filename = top_data_dir.absolute() / "latest_leapseconds.tls"
@@ -134,7 +134,7 @@ def _update_sc(ops, server=None, test=False, **kwargs):
     for path, local_dir in ops:
         print(f"Updating {server}{path} -> {local_dir}")
 
-        if not local_dir.exists:
+        if not local_dir.exists():
             if not test:
                 local_dir.mkdir(parents=True)
 
