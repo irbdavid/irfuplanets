@@ -28,9 +28,9 @@ VALID_FORMATS = [
     "MPLNUM",
     "UTCSTR",
     "DOY2004",
-    "AISSCET",
-    "MATLABTIME",
-    "UNIXTIME",
+    # "AISSCET",
+    # "MATLABTIME",
+    # "UNIXTIME",
 ]
 
 MONTHS = [
