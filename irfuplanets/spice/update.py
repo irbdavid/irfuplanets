@@ -68,7 +68,7 @@ def _wget(
     )
     std_out, std_err = process.communicate()
 
-    if verbose:
+    if verbose or (process.returncode != 0):
         print(std_out.strip(), std_err)
 
 
@@ -112,6 +112,7 @@ def check_update_lsk_kernel():
                 test=False,
                 cmd=f"wget -O {lsk_filename}",
                 cut_dirs=False,
+                verbose=True,
             )
 
             # Wget doesn't set the right timestamp or something?
@@ -254,8 +255,9 @@ def first_run(sc="ALL", interactive=True, test=False, **kwargs):
 if __name__ == "__main__":
     import sys
 
-    # print("Initial setup of irfuplanets directories...")
-    # first_run()
+    print("Initial setup of irfuplanets directories...")
+
+    first_run()
 
     print("Get a leapsecond kernel...")
     check_update_lsk_kernel()
