@@ -43,9 +43,6 @@ def _wget(
             n -= 1
         cmd += f" --cut-dirs={n}"
 
-    # if test:
-    #     cmd += " --spider"
-
     if quota is not None:
         cmd += f" --quota={quota}"
 
@@ -53,7 +50,7 @@ def _wget(
         cmd += f" --reject='{reject}'"
 
     cmd += f" {server}{path}"
-    print(cmd)
+    # print(cmd)
 
     if test:
         print(cmd)
@@ -69,9 +66,9 @@ def _wget(
     std_out, std_err = process.communicate()
 
     if verbose or (process.returncode != 0):
-        # print(std_out.strip(), std_err)
-        pass
-    print(std_out.strip(), std_err)
+        print(std_out.strip(), std_err)
+
+    return process.returncode
 
 
 def check_update_lsk_kernel():
@@ -85,7 +82,7 @@ def check_update_lsk_kernel():
     #       f"Bad config data_directory: {top_data_dir}"
 
     if not top_data_dir.exists():
-        top_data_dir.mkdir(parents=True)
+        top_data_dir.mkdir(parents=True, exist_ok=True)
 
     lsk_filename = top_data_dir.absolute() / "latest_leapseconds.tls"
 
@@ -135,8 +132,8 @@ def _update_sc(ops, server=None, test=False, **kwargs):
         print(f"Updating {server}{path} -> {local_dir}")
 
         if not local_dir.exists():
-            if not test:
-                local_dir.mkdir(parents=True)
+            # if not test:
+            local_dir.mkdir(parents=True, exist_ok=True)
 
         try:
             orig_dir = Path.cwd()
@@ -220,7 +217,7 @@ def update_all_kernels(spacecraft="ALL", **kwargs):
         update_mex(**kwargs)
 
 
-def create_dirs(interactive=True, test=False):
+def _create_dirs(interactive=True, test=False):
     """Setup needed directories based on config"""
     cfg = irfuplanets.config
 
@@ -244,12 +241,12 @@ def create_dirs(interactive=True, test=False):
                 if test:
                     continue
 
-                p.mkdir(parents=True)
+                p.mkdir(parents=True, exist_ok=True)
 
 
 def first_run(sc="ALL", interactive=True, test=False, **kwargs):
     print("Initial setup of irfuplanets directories...")
-    create_dirs(interactive=interactive, test=test)
+    _create_dirs(interactive=interactive, test=test)
 
     print("Get a leapsecond kernel...")
     check_update_lsk_kernel()
