@@ -1,7 +1,7 @@
 import os
-import pathlib
 import subprocess
 import time
+from pathlib import Path
 
 import irfuplanets
 
@@ -26,6 +26,7 @@ def _wget(
     test=False,
     cmd=None,
     quota=None,
+    reject=None,
 ):
     if cmd is None:
         cmd = "wget -m -nH -nv -np"
@@ -47,6 +48,9 @@ def _wget(
 
     if quota is not None:
         cmd += f" --quota={quota}"
+
+    if reject is not None:
+        cmd += f" --reject='{reject}'"
 
     cmd += f" {server}{path}"
     print(cmd)
@@ -73,7 +77,7 @@ def check_update_lsk_kernel():
     # generic_kernels/lsk/latest_leapseconds.tls
 
     top_data_dir = irfuplanets.config["irfuplanets"]["data_directory"]
-    top_data_dir = pathlib.Path(top_data_dir)
+    top_data_dir = Path(top_data_dir)
 
     assert top_data_dir.is_dir(), f"Bad config data_directory: {top_data_dir}"
 
@@ -99,7 +103,7 @@ def check_update_lsk_kernel():
         orig_dir = None
 
         try:
-            orig_dir = pathlib.Path.cwd()
+            orig_dir = Path.cwd()
             os.chdir(orig_dir)
             _wget(
                 server,
@@ -127,7 +131,7 @@ def _update_sc(ops, server=None, test=False, **kwargs):
                 local_dir.mkdir(parents=True)
 
         try:
-            orig_dir = pathlib.Path.cwd()
+            orig_dir = Path.cwd()
             os.chdir(local_dir)
             _wget(server, path, test=test, **kwargs)
         finally:
@@ -139,9 +143,7 @@ def update_mex(server=None, basepath=None, local=None, test=False, **kwargs):
 
     if local is None:
         local = (
-            pathlib.Path(
-                irfuplanets.config["mex"]["data_directory"]
-            ).absolute()
+            Path(irfuplanets.config["mex"]["data_directory"]).absolute()
             / "spice/"
         )
 
@@ -172,7 +174,7 @@ def update_maven(server=None, basepath=None, local=None, test=False, **kwargs):
     import irfuplanets
 
     if local is None:
-        local = pathlib.Path(
+        local = Path(
             irfuplanets.config["maven"]["kernel_directory"]
         ).absolute()
 
@@ -210,12 +212,57 @@ def update_all_kernels(spacecraft="ALL", **kwargs):
         update_mex(**kwargs)
 
 
+def create_dirs(interactive=True, test=False):
+    """Setup needed directories based on config"""
+    cfg = irfuplanets.config
+
+    for root_cfg in cfg:
+        if root_cfg == "DEFAULT":
+            continue
+        for attr in cfg[root_cfg]:
+            p = Path(cfg[root_cfg][attr])
+            if p.exists():
+                print(f"{p} already exists")
+                continue
+
+            if p.is_dir() and "directory" in attr.lower():
+                if interactive:
+                    val = input(f"Create {p} [Enter Y/N]? ")
+                    if val.upper() != "Y":
+                        continue
+                else:
+                    print(f"Making {p}")
+
+                if test:
+                    continue
+
+                p.mkdir(parents=True)
+
+
+def first_run(sc="ALL", interactive=True, test=False, **kwargs):
+    print("Initial setup of irfuplanets directories...")
+    create_dirs(interactive=interactive, test=test)
+
+    print("Get a leapsecond kernel...")
+    check_update_lsk_kernel()
+
+    print("Get spice kernels...")
+    update_all_kernels(spacecraft=sc, reject=r"\?C=")
+
+
 if __name__ == "__main__":
     import sys
+
+    # print("Initial setup of irfuplanets directories...")
+    # first_run()
+
+    print("Get a leapsecond kernel...")
+    check_update_lsk_kernel()
 
     if len(sys.argv) > 1:
         sc = str(sys.argv[len(sys.argv) - 1]).upper()
     else:
         sc = "ALL"
 
-    update_all_kernels(spacecraft=sc)
+    print("Get spice kernels...")
+    update_all_kernels(spacecraft=sc, reject=r"\?C=")

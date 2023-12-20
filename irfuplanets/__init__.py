@@ -3,11 +3,15 @@
 import configparser
 import pathlib
 
+from irfuplanets.spice.update import first_run
+
 __author__ = "David Andrews"
 __copyright__ = "Copyright 2023, David Andrews"
 __license__ = "MIT"
 __version__ = "1.0.0"
 __email__ = "david.andrews@irfu.se"
+
+__all__ = ["first_run"]
 
 path_to_config = pathlib.Path.home() / "irfuplanets.cfg"
 

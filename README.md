@@ -12,21 +12,27 @@ For now, only directly from github:
 ```bash
 pip install git+https://github.com/irbdavid/irfuplanets.git
 
-
 ```
 
 ## First Run
 
-At first run:
+At first run, to create directories, sync spice kernels etc.:
 
 ```py
 import irfuplanets
+
 ```
 
-will create a file `irfuplanets.cfg` in your home directory that will store some important paths.
+This will create a file `irfuplanets.cfg` in your home directory that will store some important paths.
 Default settings should be adjusted if you want data to get pushed elsewhere.
 
+Then,
 
+```py
+irfuplanets.first_run()
+
+```
+will create those directories if needed and sync some spice data for MEX and MAVEN.
 
 
 ## Usage
