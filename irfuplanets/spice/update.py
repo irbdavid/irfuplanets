@@ -69,7 +69,9 @@ def _wget(
     std_out, std_err = process.communicate()
 
     if verbose or (process.returncode != 0):
-        print(std_out.strip(), std_err)
+        # print(std_out.strip(), std_err)
+        pass
+    print(std_out.strip(), std_err)
 
 
 def check_update_lsk_kernel():
@@ -98,7 +100,7 @@ def check_update_lsk_kernel():
         print("No sign of a local leapseconds kernel file.")
         age = 1e99
 
-    if age > (86400 * 100):
+    if age > (86400 * 10):
         print(f"Obtaining newest leap-seconds kernel from {server}...")
 
         orig_dir = None
@@ -117,6 +119,10 @@ def check_update_lsk_kernel():
 
             # Wget doesn't set the right timestamp or something?
             os.utime(lsk_filename, (time_now, time_now))
+
+        except Exception as e:
+            print(e)
+            raise e
 
         finally:
             os.chdir(orig_dir)
