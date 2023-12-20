@@ -9,6 +9,7 @@ from functools import wraps
 
 import numpy as np
 import spiceypy
+from spiceypy.utils.exceptions import SpiceyError
 
 __author__ = "David Andrews"
 __copyright__ = "Copyright 2023, David Andrews"
@@ -28,6 +29,29 @@ def spice_wrapper(f):
             return f(time)
 
     return inner
+
+
+def better_spice_wrapper(n=1):
+    """Wrapper for spice functions that handles array inputs, and fills NaNs
+    on failed calculations"""
+
+    def actual_decorator(f):
+        def g(t):
+            try:
+                return f(t)
+            except SpiceyError:
+                return np.repeat(np.nan, n)
+
+        @wraps(f)
+        def inner(time):
+            if hasattr(time, "__iter__"):
+                return np.vstack([g(t) for t in time]).T
+            else:
+                return g(time)
+
+        return inner
+
+    return actual_decorator
 
 
 def describe_loaded_kernels(kind="all"):
