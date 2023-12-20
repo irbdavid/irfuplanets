@@ -78,3 +78,24 @@ def test_time_convert(fmt, dt):
 
     precision = 0.5 * np.abs(tf - t) / (tf + t)
     assert precision < 1e-6, f"Precision {precision} exceeds tolerance"
+
+
+@pytest.mark.parametrize("t", dt)
+def test_utc_equiv(t):
+    """SPICEET to UTCSTR agrees with spiceet->datetime64->str?"""
+    chars = " 0"
+    utcstr = irfuplanets.time.spiceet_to_utcstr(t, "ISOC")
+    dtime = irfuplanets.time.spiceet_to_datetime64(t)
+
+    # numpy.str_ ?
+    dtime_utcstr = np.datetime_as_string(dtime)
+    # dtime_utcstr = str(np.datetime_as_string(dtime))
+
+    utcstr = utcstr.rstrip(chars)
+    dtime_utcstr = dtime_utcstr.rstrip(chars)
+
+    # print(type(utcstr), type(str(dtime_utcstr)))
+    # print(dtime_utcstr.shape)
+
+    # print(utcstr, dtime, dtime_utcstr)
+    assert utcstr == dtime_utcstr, "Failed conversion"
