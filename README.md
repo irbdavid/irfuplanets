@@ -57,4 +57,10 @@ See also various notebooks in the [docs/examples](examples) folder.
 
 ## Development
 
-Read the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+<!-- Read the [CONTRIBUTING.md](CONTRIBUTING.md) file. -->
+
+
+
+```bash
+pytest .
+```
