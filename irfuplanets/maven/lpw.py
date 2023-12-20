@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import spiceypy
 from matplotlib.colors import LogNorm
+from spiceypy.utils.exceptions import SpiceyError
 
 from irfuplanets.maven.sdc_interface import yyyymmdd_to_spiceet
 from irfuplanets.plot import make_colorbar_cax
@@ -24,14 +25,14 @@ __email__ = "david.andrews@irfu.se"
 
 
 def spice_wrapper(n=1):
-    """Wrapper around spiceypy.spkpos that handles array inputs, and provides
-    useful defaults"""
+    """Wrapper for spice functions that handles array inputs, and fills NaNs
+    on failed calculations"""
 
     def actual_decorator(f):
         def g(t):
             try:
                 return f(t)
-            except spiceypy.SpiceException:
+            except SpiceyError:
                 return np.repeat(np.nan, n)
 
         @wraps(f)

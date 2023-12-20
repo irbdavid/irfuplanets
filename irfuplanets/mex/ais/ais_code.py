@@ -295,7 +295,7 @@ def laminated_delays(d, f, fp_local, altitude=None):
     if altitude is not None:
         return (altitude - z / 2.0, fp_to_ne(f))
     else:
-        return (-z / 2.0, fp_to_ne(f))
+        return (-1.0 * z / 2.0, fp_to_ne(f))
 
 
 def _laminated_test():
@@ -1652,12 +1652,8 @@ class Ionogram(object):
         scaled = np.sum(d, 1).astype(float)
         if np.amax(scaled) < 0.3 * d.shape[1]:
             return (
-                "Auto-ground: Failed (no peak above threshold: %f, %f, %f)"
-                % (
-                    np.sum(d),
-                    np.amax(scaled),
-                    0.3 * d.shape[1],
-                )
+                "Auto-ground: Failed (no peak above threshold: "
+                f"{np.sum(d)}, {np.amax(scaled)}, {0.3 * d.shape[1]})"
             )
 
         imax = _arg_peak(scaled)
@@ -3128,8 +3124,7 @@ def get_ais_data(
 
     ninx = np.sum(inx)
     print(
-        "Returning %d of %d (%.1f%%)"
-        % (ninx, inx.shape[0], 100.0 * ninx / inx.shape[0])
+        f"Returning {ninx} of {inx.shape[0]} ({100.0 * ninx / inx.shape[0]}%)"
     )
 
     ne = ne[inx]

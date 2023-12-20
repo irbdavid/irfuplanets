@@ -708,9 +708,9 @@ def plot_lat_lon_field(
     extent = (0.0, 360.0, -90, 90)
 
     if not cmap:
-        cmap = plt.cm.RdBu_r
+        cmap = plt.colormaps["RdBu_r"]
         if q_abs:
-            cmap = plt.cm.Reds
+            cmap = plt.colormaps["Reds"]
 
     if data_only:
         if full_range:

@@ -135,8 +135,8 @@ def _update_sc(ops, server=None, test=False, **kwargs):
             # if not test:
             local_dir.mkdir(parents=True, exist_ok=True)
 
+        orig_dir = Path.cwd()
         try:
-            orig_dir = Path.cwd()
             os.chdir(local_dir)
             _wget(server, path, test=test, **kwargs)
         finally:

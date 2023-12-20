@@ -3,7 +3,6 @@ import os
 import sys
 
 import matplotlib as mpl
-import matplotlib.cm
 import matplotlib.gridspec
 import matplotlib.pylab as plt
 import matplotlib.ticker
@@ -771,7 +770,7 @@ class AISReview(object):
         ax.set_facecolor("gray")
 
         if cmap is None:
-            cmap = matplotlib.cm.hot
+            cmap = matplotlib.colormaps["hot"]
         if cmticks is None:
             cmticks = [3, 4, 5, 6]
         # n_profiles = (
@@ -955,7 +954,7 @@ class AISReview(object):
             extent=extent,
             origin="upper",
             aspect="auto",
-            cmap=matplotlib.cm.RdBu_r,
+            cmap=matplotlib.colormaps["RdBu_r"],
             vmin=-1e5,
             vmax=1e5,
         )
@@ -1141,7 +1140,7 @@ class AISReview(object):
         vmax=3.0,
     ):
         if cmap is None:
-            cmap = plt.cm.autumn
+            cmap = plt.colormaps["autumn"]
             cmap.set_bad("dimgrey", 0.0)
             cmap.set_under("dimgrey", 0.0)
 
@@ -1223,7 +1222,7 @@ class AISReview(object):
 
             points = np.array(
                 [f_x(self.mso_pos), f_y(self.mso_pos)]
-            ).T.reshape(-1, 1, 2)
+            ).T.reshape((-1, 1, 2))
             segments = np.concatenate([points[:-1], points[1:]], axis=1)
             lc = LineCollection(
                 segments,
@@ -1266,7 +1265,7 @@ class AISReview(object):
             ax = plt.gca()
 
         if cmap is None:
-            cmap = plt.cm.autumn
+            cmap = plt.colormaps["autumn"]
             cmap.set_bad("dimgrey", 0.0)
             cmap.set_under("dimgrey", 0.0)
 
@@ -1336,7 +1335,7 @@ class AISReview(object):
 
             points = np.array(
                 [f_x(self.mso_pos), f_y(self.mso_pos)]
-            ).T.reshape(-1, 1, 2)
+            ).T.reshape((-1, 1, 2))
             segments = np.concatenate([points[:-1], points[1:]], axis=1)
             lc = LineCollection(
                 segments,
@@ -1529,7 +1528,7 @@ class AISReview(object):
             self.modb_along_orbit(ax[1], vmax=100.0)
 
             if save:
-                fname = mex.locate_data_directory() + (
+                fname = mex.data_directory + (
                     "ais_plots/A0_v0.9/%05d/%d.pdf"
                     % ((self.orbit // 1000) * 1000, self.orbit)
                 )

@@ -398,7 +398,7 @@ def map_along_line(
     #         new_timebase, time, q, max_step=max_step, missing=missing
     #     )
 
-    points = np.array([x, y]).T.reshape(-1, 1, 2)
+    points = np.array([x, y]).T.reshape((-1, 1, 2))
     segments = np.concatenate([points[:-1], points[1:]], axis=1)
     lc = LineCollection(segments, cmap=cmap, norm=norm, **kwargs)
 

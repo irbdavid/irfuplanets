@@ -286,7 +286,7 @@ def setup_lat_lon_ax(ax=None, label=True, tickspacing=30.0):
 def plot_surface_map(
     orbits, ax=None, param="time", cmap=None, norm=None, **kwargs
 ):
-    from matplotlib.cm import summer
+    summer = plt.colormaps["summer"]
 
     from irfuplanets.mex.ais import get_ais_index
 
