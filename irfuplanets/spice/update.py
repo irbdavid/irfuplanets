@@ -79,7 +79,8 @@ def check_update_lsk_kernel():
     top_data_dir = irfuplanets.config["irfuplanets"]["data_directory"]
     top_data_dir = Path(top_data_dir)
 
-    assert top_data_dir.is_dir(), f"Bad config data_directory: {top_data_dir}"
+    # assert top_data_dir.is_dir(), \
+    #       f"Bad config data_directory: {top_data_dir}"
 
     if not top_data_dir.exists:
         top_data_dir.mkdir(parents=True)
