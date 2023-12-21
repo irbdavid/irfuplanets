@@ -686,7 +686,8 @@ def read_ais_file(file_name, verbose=False, debug=True):
                     if tmp_ionogram is not None:
                         ionogram_list.append(tmp_ionogram)
                     tmp_ionogram = Ionogram()
-                    tmp_ionogram.time = spiceet(b"".join(t[5:26]))
+                    bstr = b"".join(t[5:26])
+                    tmp_ionogram.time = spiceet(str(bstr, encoding="utf-8"))
                     freq_inx = 0
 
                 tmp_ionogram.frequencies[freq_inx] = this_frequency

@@ -8,6 +8,7 @@ other way.
 """
 
 import datetime
+import warnings
 
 import matplotlib.dates
 import matplotlib.ticker
@@ -24,6 +25,7 @@ VALID_FORMATS = [
     "SPICEET",
     "AUTO",
     "DATETIME",
+    "DATETIME64",
     "CELSIUSTIME",
     "MPLNUM",
     "UTCSTR",
@@ -93,44 +95,63 @@ def time_convert(
     """
     # global VALID_FORMATS
 
+    _input_format = input_format.upper()
+    _output_format = output_format.upper()
+
     if time is None:
         return None
 
-    if not input_format.upper() in VALID_FORMATS:
-        raise ValueError("Invalid input format: " + str(input_format))
+    if not _input_format.upper() in VALID_FORMATS:
+        raise ValueError("Invalid input format: " + str(_input_format))
 
-    if not output_format.upper() in VALID_FORMATS:
-        raise ValueError("Invalid output format: " + str(output_format))
+    if not _output_format.upper() in VALID_FORMATS:
+        raise ValueError("Invalid output format: " + str(_output_format))
 
     # Passthrough
-    if input_format == output_format:
+    if _input_format == _output_format:
         return time
 
-    if input_format == "AUTO":
+    if _input_format == "AUTO":
         if isinstance(time, float):
-            input_format = "SPICEET"
+            _input_format = "SPICEET"
         elif isinstance(time, datetime.datetime):
-            input_format = "DATETIME"
+            _input_format = "DATETIME"
+        elif isinstance(time, np.datetime64):
+            # if np.issubdtype(time.dtype, np.datetime64):
+            _input_format = "DATETIME64"
         elif isinstance(time, str):
-            input_format = "UTCSTR"
-        elif isinstance(time, bytes):
-            input_format = "UTCSTR"
+            _input_format = "UTCSTR"
+        # elif isinstance(time, bytes):
+        #     _input_format = "UTCSTR"
         elif isinstance(time, CelsiusTime):
-            input_format = "CELSIUSTIME"
+            _input_format = "CELSIUSTIME"
 
-    if input_format == "AUTO":
-        raise ValueError("Could not detrmine input format automatically")
+    if _input_format == "AUTO":
+        msg = (
+            "Could not determine input format automatically,"
+            f"or unrecognized type ({type(time)})."
+        )
+        raise ValueError(msg)
 
-    if input_format != "SPICEET":
-        fname = input_format.lower() + "_to_spiceet"
+    # Shouldn't really happen, but could do
+    if _input_format == _output_format:
+        # Do nothing:
+        warnings.warn(
+            "Called time_convert with equivalent input and output formats.",
+            RuntimeWarning,
+        )
+        return time
+
+    if _input_format != "SPICEET":
+        fname = _input_format.lower() + "_to_spiceet"
         as_et = globals()[fname](time, **input_kwargs)
     else:
         as_et = time
 
-    if output_format == "SPICEET":
+    if _output_format == "SPICEET":
         return as_et
 
-    fname = "spiceet_to_" + output_format.lower()
+    fname = "spiceet_to_" + _output_format.lower()
 
     return globals()[fname](as_et, **output_kwargs)
 
@@ -337,20 +358,37 @@ def spiceet_to_unixtime(time):
 
 
 def datetime64_to_spiceet(time):
-    _t = np.atleast_1d(time)
-    s = np.datetime_as_string(_t[0])
-    et0 = utcstr_to_spiceet(s)
-    out = et0 + (_t - _t[0]) / np.timedelta64(1, "s")
-    return out.reshape(time.shape)
+    # _t = np.atleast_1d(time)
+    if isinstance(time, np.ndarray):
+        s = np.datetime_as_string(time[0])
+        et0 = utcstr_to_spiceet(s)
+        out = et0 + (time - time[0]) / np.timedelta64(1, "s")
+    else:
+        s = np.datetime_as_string(time)
+        out = utcstr_to_spiceet(s)
+    return out
 
 
 def spiceet_to_datetime64(time):
-    _t = np.atleast_1d(time)
-    dt0 = np.datetime64(spiceet_to_utcstr(_t[0], "ISOC"))
-    out = dt0 + np.timedelta64(1, "s") * (_t - _t[0])
-    if hasattr(time, "shape"):
-        return out.reshape(time.shape)
-    return out[0]
+    if isinstance(time, np.ndarray):
+        dt0 = np.datetime64(spiceet_to_utcstr(time[0], "ISOC"))
+        out = dt0 + np.timedelta64(1, "s") * (time - time[0])
+    else:
+        out = np.datetime64(spiceet_to_utcstr(time, "ISOC"))
+    return out
+    # _t = np.atleast_1d(time)
+    # dt0 = np.datetime64(spiceet_to_utcstr(_t[0], "ISOC"))
+    # out = dt0 + np.timedelta64(1, "s") * (_t - _t[0])
+    # if hasattr(time, "shape"):
+    #     return out.reshape(time.shape)
+    # return out[0]
+
+    # _t = np.atleast_1d(time)
+    # dt0 = np.datetime64(spiceet_to_utcstr(_t[0], "ISOC"))
+    # out = dt0 + np.timedelta64(1, "s") * (_t - _t[0])
+    # if hasattr(time, "shape"):
+    #     return out.reshape(time.shape)
+    # return out[0]
 
 
 # These are then just helper functions that have input_format='AUTO' hardcoded:

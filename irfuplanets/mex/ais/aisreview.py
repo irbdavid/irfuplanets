@@ -709,7 +709,7 @@ class AISReview(object):
                     ms=self.marker_size,
                 )
         plt.ylabel(r"$h_{max} / km$")
-        plt.ylim(0o1, 249)
+        plt.ylim(1, 249)
 
     def plot_peak_density(self, fmt="k.", labels=True, ax=None, **kwargs):
         if ax is None:

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import numpy as np
 import pytest
 
@@ -99,3 +101,50 @@ def test_utc_equiv(t):
 
     # print(utcstr, dtime, dtime_utcstr)
     assert utcstr == dtime_utcstr, "Failed conversion"
+
+
+def test_utcstr_fmt():
+    t = 0.0
+    irfuplanets.time.spiceet_to_utcstr(t, "ISOC")
+    irfuplanets.time.spiceet_to_utcstr(t, "ISOD")
+    irfuplanets.time.spiceet_to_utcstr(t, "C")
+
+
+@pytest.mark.parametrize(
+    "input",
+    (
+        0.0,
+        np.datetime64("2015-01-01T00:13"),
+        datetime(2015, 1, 1, 3, 30),
+        "2015-01-01T00:00",
+    ),
+)
+def test_auto_type(input):
+    result = itime.time_convert(
+        input, input_format="AUTO", output_format="spiceet"
+    )
+
+    assert isinstance(
+        result, float
+    ), f"{input}->AUTO should be a float: {type(result)}"
+
+
+@pytest.mark.parametrize(
+    "input",
+    (
+        0.0,
+        np.datetime64("2015-01-01T00:13"),
+        # np.array(), dtype="datetime64[ns]"),
+        datetime(2015, 1, 1, 3, 30),
+        "2015-01-01T00:00",
+    ),
+)
+def test_auto_inverse(input):
+    for fmt in VALID_FORMATS:
+        res = itime.time_convert(input, input_format="AUTO", output_format=fmt)
+        inv = itime.time_convert(
+            res, input_format="AUTO", output_format="spiceet"
+        )
+        assert isinstance(
+            inv, float
+        ), f"Could not do the inverse? {input}->{fmt}: {type(inv)}"
