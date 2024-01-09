@@ -6,11 +6,10 @@ import sys
 import time as py_time
 
 import matplotlib
-import mex
-import mex.ais
 import numpy as np
 
 import irfuplanets
+import irfuplanets.mex.ais as ais
 from irfuplanets.mex.ais.aisreview import main
 from irfuplanets.time import now
 
@@ -77,7 +76,7 @@ def async_worker_computer(o, queue, configurer, debug=False, verbose=False):
     logging.info("Starting %d" % o)
 
     try:
-        mex.ais.compute_all_digitizations(o)
+        ais.compute_all_digitizations(o)
         logging.info("Completed %d" % o)
     except Exception as e:
         if debug:
@@ -93,10 +92,10 @@ def async_worker_review(o, queue, configurer, debug=True, verbose=True):
     logging.info("Starting %d" % o)
 
     try:
-        mex.ais.compute_all_digitizations(o)
-        d = mex.ais.DigitizationDB(o)
+        ais.compute_all_digitizations(o)
+        d = ais.DigitizationDB(o)
         if len(d) == 0:
-            mex.ais.compute_all_digitizations(o)
+            ais.compute_all_digitizations(o)
         main(o, show=False, save=True)
         logging.info("Completed %d" % o)
     except Exception as e:
@@ -159,6 +158,12 @@ class DeltaTimer(object):
 
 
 if __name__ == "__main__":
+    from irfuplanets.mex import orbits
+    from irfuplanets.mex.ais.ais_code import (
+        _generate_ais_coverage,
+        _generate_ais_index,
+    )
+
     verbose = False
     save_every = 1
     np.seterr(all="ignore")
@@ -169,7 +174,7 @@ if __name__ == "__main__":
     start = determine_last_processed_orbit() - 50
     # start = 1840
     start = 17000
-    finish = mex.orbits[now()].number - 10
+    finish = orbits[now()].number - 10
 
     if len(sys.argv) > 1:
         start = int(sys.argv[1])
@@ -233,5 +238,5 @@ if __name__ == "__main__":
     #     print '%s: %s' % (utcstr(k), str(v))
 
     if not runner == junk:
-        mex.ais.ais_code._generate_ais_coverage()
-        mex.ais.ais_code._generate_ais_index(recompute=False, update=True)
+        _generate_ais_coverage()
+        _generate_ais_index(recompute=False, update=True)
