@@ -36,6 +36,7 @@ def setup_time_axis(
     calendar=True,
     locator_kwargs=None,
     formatter_kwargs=None,
+    **kwargs,
 ):
     """Function that applies SPICEET based axis locator and labeller to the
     current plot axis (default xaxis)
@@ -55,6 +56,8 @@ def setup_time_axis(
         passed to locator, by default None
     formatter_kwargs : dict, optional
         passed to formatter, by default None
+    **kwargs: passed to locator & formatter (duplicated)
+
     """
 
     if locator_kwargs is None:
@@ -66,6 +69,10 @@ def setup_time_axis(
     if calendar:
         locator_kwargs["calendar"] = True
         # formatter_kwargs['calendar'] = True
+
+    for k in kwargs:
+        formatter_kwargs[k] = kwargs[k]
+        locator_kwargs[k] = kwargs[k]
 
     if ax is None:
         ax = plt.gca()
