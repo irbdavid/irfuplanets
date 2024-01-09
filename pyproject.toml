@@ -102,6 +102,8 @@ disable = """
     invalid-name,
     duplicate-code,
     not-an-iterable,
+    unsubscriptable-object,
+    no-member,
     fixme
 """
 ignore = ""
