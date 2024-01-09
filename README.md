@@ -41,15 +41,19 @@ will create those directories if needed and sync some spice data for MEX and MAV
     import matplotlib.pyplot as plt
 
     import irfuplanets.maven.lpw as lpw
-    import irfuplanets.plot as irfplot
-    import irfuplanets.time as irftime
+    import irfuplanets.plot
+    import irfuplanets.time
 
-    start = irftime.spiceet("2015-001T00:00")
+    start = irfuplanets.time.spiceet("2015-001T00:00")
     finish = start + 3600.*5
     data = lpw.lpw_l2_load(kind="lpnt", start=start, finish=finish)
 
+
     plt.plot(data['time'], data['ne'])
-    irftime.setup_time_axis(calendar=True)
+    irfuplanets.time.setup_time_axis(calendar=True)
+
+    orbit = irfuplanets.maven.orbit(start)
+    print(orbit.number)
 
 ```
 
@@ -59,7 +63,7 @@ See also various notebooks in the [docs/examples](examples) folder.
 
 <!-- Read the [CONTRIBUTING.md](CONTRIBUTING.md) file. -->
 
-
+Run the test suite using pytest if you make changes.
 
 ```bash
 pytest .
