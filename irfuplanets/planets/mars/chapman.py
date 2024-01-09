@@ -518,7 +518,7 @@ def _laminated_delays_test(dd, f, fp_local, altitude=None):
 
 if __name__ == "__main__":
     plt.close("all")
-    from mex.ais import laminated_delays
+    from irfuplanets.mex.ais import laminated_delays
 
     all_models = []
     for n in (1e4, 2e4, 4e4, 8e4, 12e4):
