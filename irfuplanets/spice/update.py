@@ -163,7 +163,7 @@ def update_mex(server=None, basepath=None, local=None, test=False, **kwargs):
         for x in ("FK", "IK", "LSK", "PCK", "SCLK", "SPK", "DSK")
     ]
 
-    ops = []
+    # ops = []
 
     ops.append(
         (
