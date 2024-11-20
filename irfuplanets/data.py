@@ -3,6 +3,7 @@
 from functools import wraps
 
 import numpy as np
+import spiceypy
 from skimage.morphology import label
 
 __author__ = "David Andrews"
@@ -371,7 +372,7 @@ def center_phase_data(x, center=0.0, interval=360.0):
 
 def polar_to_cartesian(pos, vec):
     """Coordinate conversion, input position in
-    (radial dist, latitude, longitude ) [deg]."""
+    (radial dist {or altitude, doesn't matter}, latitude, longitude ) [deg]."""
     clat = np.pi / 2 - pos[1] * np.pi / 180.0
     lon = pos[2] * np.pi / 180.0
 
@@ -392,7 +393,7 @@ def polar_to_cartesian(pos, vec):
 
 def cartesian_to_polar(pos, vec):
     """Coordinate conversion, input position in
-    (radial dist, latitude, longitude ) [deg]."""
+    (radial dist {or altitude, doesn't matter}, latitude, longitude ) [deg]."""
     clat = np.pi / 2 - pos[1] * np.pi / 180.0
     lon = pos[2] * np.pi / 180.0
     out = np.array(
@@ -407,3 +408,73 @@ def cartesian_to_polar(pos, vec):
         )
     )
     return out
+
+
+def mso_to_mse(b, v=None, aberration=False):
+    """Return the transformation matrix MSO->MSE, for given SW velocity and
+    B vectors (in MSO).
+    Definition of MSE used is that principal axis X is along the negative of
+    solar wind velocity vector, defaulting to -X MSO, unless specified
+
+    Example:
+            v = (-400.,10.,10.)
+            b = (-5,-5,1)
+            m = mso_to_mse(b,v)
+            b_in_mse = np.dot(m,b)
+
+    Given a vector of b values (3xN), the output will be a (3x3xN) matrix.
+    Transform a vector a then like
+            a_in_mse = np.einsum("ij...,j...->i...", a,b)
+    There might be a more efficient way.
+    """
+
+    if v is None:
+        v = np.array(
+            (-400.0, 0.0, 0.0)
+        )  # assume v solar wind is purely antisunward
+
+    if aberration:
+        v = v + np.array((0.0, -24.1, 0.0))  # Mars orbital velocity?
+
+    bn = b / np.sqrt(np.sum(b * b, axis=0))
+    v = -v / np.sqrt(np.sum(v * v, axis=0))
+    # MSO: X towards sun, Y along orbit vector
+    # MSE: X parallel to V, B lies in X-Y plane with positive Y.  E along Z.
+
+    if b.ndim == 2:
+        out = np.empty((3, 3, b.shape[1]))
+        for i in range(b.shape[1]):
+            # spiceypy doesn't want a strided array, so create tmp.
+            tmp = bn[:, i] * 1.0
+            out[:, :, i] = spiceypy.twovec(v, 1, tmp, 2)
+        return out
+
+    return spiceypy.twovec(v, 1, bn, 2)
+
+
+def __test_mso_to_mse():
+    b = np.zeros((3,))
+    # b = np.array((0.,-1.,1.0))
+    b[0] = 0.0
+    b[1] = 11.0
+    b[2] = 0.0
+
+    b = b / np.sqrt(np.sum(b * b, axis=0))
+
+    m = mso_to_mse(b)
+    print(b.shape, m.shape)
+
+    s = "ij...,j...->i..."
+    x = np.einsum(s, m, b)
+    print("B:", b)
+    print("-" * 10)
+    print("M:", m)
+    print("-" * 10)
+    print("M.B [ein]:", x)
+    print("M.B [dot]:", np.dot(m, b))
+
+    print(np.einsum(s, m, np.array((0.0, 0.0, 1.0))))
+
+
+if __name__ == "__main__":
+    __test_mso_to_mse()
