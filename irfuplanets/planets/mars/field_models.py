@@ -52,7 +52,9 @@ def schmidt_polynomials(x, nmax):
     return arr
 
 
-def convert_biau_to_bmso(iau_position_rll, b_iau, times, check_kernels=None):
+def convert_biau_to_bmso(
+    iau_position_rll, b_iau, times, check_kernels=None, use_maven=True
+):
     """iau_position is in iau_mars frame, (r, lat, lon) in deg, b_iau in
     (r,theta,phi), times in spice et.
 
@@ -65,20 +67,29 @@ def convert_biau_to_bmso(iau_position_rll, b_iau, times, check_kernels=None):
         import maven;
         convert_biau_to_bmso(...,check_kernels=maven).
     """
-    import irfuplanets.mex as mex
+    if not use_maven:
+        import irfuplanets.mex as mex
+
+        if check_kernels is not None:
+            if check_kernels is True:
+                mex.load_kernels(times)
+            else:
+                check_kernels.load_kernels(times)
+
+        mso_name = "MSO"
+
+    else:
+        import irfuplanets.maven as mvn
+
+        mvn.load_kernels(times)
+        mso_name = "MAVEN_MSO"
 
     b_out = np.empty_like(b_iau) + np.nan
 
     b_iau_cart = polar_to_cartesian(iau_position_rll, b_iau)
 
-    if check_kernels is not None:
-        if check_kernels is True:
-            mex.load_kernels(times)
-        else:
-            check_kernels.load_kernels(times)
-
     for i in range(times.shape[0]):
-        m = spiceypy.pxform("IAU_MARS", "MAVEN_MSO", times[i])
+        m = spiceypy.pxform("IAU_MARS", mso_name, times[i])
         x = spiceypy.mxv(m, b_iau_cart[:, i] * 1.0)
         b_out[:, i] = x
 
