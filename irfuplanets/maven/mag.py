@@ -86,7 +86,7 @@ def load_mag_l2(
         if not os.path.exists(f):
             raise IOError("%s does not exist" % f)
 
-    if kind == "ss1s":
+    if (kind == "ss1s") or (kind == "pc1s"):
         output = {"time": None, "def": None}
         for f in sorted(files):
             if verbose:
@@ -108,17 +108,21 @@ def load_mag_l2(
                         "Could not parse the header in file %s" % f
                     )
 
-            c = np.loadtxt(f, skiprows=skip, usecols=[6, 7, 8, 9]).T
+            c = np.loadtxt(
+                f, skiprows=skip, usecols=[6, 7, 8, 9, 11, 12, 13]
+            ).T
             s = f.split("_")[-3][:4] + "-001T00:00"
             c[0] = (c[0] - 1.0) * 86400.0 + spiceet(s)
 
             if output["time"] is None:
                 output["time"] = np.array(c[0])
-                output["b"] = np.array(c[1:])
+                output["b"] = np.array(c[1:4])
+                output["pos"] = np.array(c[4:7])
 
             else:
                 output["time"] = np.hstack((output["time"], np.array(c[0])))
-                output["b"] = np.hstack((output["b"], np.array(c[1:])))
+                output["b"] = np.hstack((output["b"], np.array(c[1:4])))
+                output["pos"] = np.hstack((output["pos"], np.array(c[4:7])))
 
     else:
         raise ValueError("Input kind='%s' not recognized" % kind)

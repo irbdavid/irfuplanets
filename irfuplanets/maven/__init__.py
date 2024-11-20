@@ -43,10 +43,11 @@ if True:
     )
 
 # Note Dec. 2023: Need to sortout the authentication below
-if False:
-    print("Setting up SDC access (team)")
+# Note Apr 2024: Test?
+if os.getenv("MAVENPFP_USER_PASS"):
+    print("Setting up Berkeley data access")
     maven_http_manager = HTTP_Manager(
-        "http://lasp.colorado.edu/maven/sdc/team/sci/",
+        "http://sprg.ssl.berkeley.edu/data/maven/data/sci/",
         os.getenv("MAVENPFP_USER_PASS").split(":")[0],
         os.getenv("MAVENPFP_USER_PASS").split(":")[1],
         irfuplanets.config["maven"]["data_directory"],

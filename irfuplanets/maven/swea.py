@@ -29,6 +29,7 @@ def load_swea_l2_summary(
     delete_others=True,
     cleanup=False,
     verbose=None,
+    return_paths=False,
 ):
     import irfuplanets.maven
 
@@ -64,7 +65,7 @@ def load_swea_l2_summary(
         )
         month += 1
         if month > 12:
-            month = 0o1
+            month = 1
             year += 1
         t = spiceet("%d-%02d-01T00:00" % (year, month))
 
@@ -82,6 +83,9 @@ def load_swea_l2_summary(
         if not os.path.exists(f):
             raise IOError("%s does not exist" % f)
 
+    if return_paths:
+        return files
+
     if not files:
         return dict()
 
@@ -89,6 +93,36 @@ def load_swea_l2_summary(
         output = {"time": None, "def": None}
         for f in sorted(files):
             c = cdflib.CDF(f)
+
+            if output["time"] is None:
+                output["time"] = c["epoch"]
+                output["def"] = c["diff_en_fluxes"].T
+
+                # Some weird formatting here:
+                output["energy"] = np.array(
+                    [c["energy"][i] for i in range(c["energy"].shape[0])]
+                )
+                output["energy"] = output["energy"][::-1]
+            else:
+                output["time"] = np.hstack((output["time"], c["epoch"]))
+                output["def"] = np.hstack(
+                    (output["def"], c["diff_en_fluxes"].T)
+                )
+
+                if output["energy"].shape != c["energy"].shape:
+                    raise ValueError("Energy range has changed!")
+
+        output["def"] = output["def"][::-1, :]
+    elif kind == "svypad":
+        output = {"time": None, "def": None}
+        for f in sorted(files):
+            c = cdflib.CDF(f)
+
+            # print()
+            # print(f)
+            # for var in c:
+            #     print(var)
+            #     print(var, c[var].shape)
 
             if output["time"] is None:
                 output["time"] = c["epoch"]

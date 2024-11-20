@@ -64,7 +64,7 @@ def load_swia_l2_summary(
         )
         month += 1
         if month > 12:
-            month = 0o1
+            month = 1
             year += 1
         t = spiceet("%d-%02d-01T00:00" % (year, month))
 

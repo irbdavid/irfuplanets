@@ -278,7 +278,7 @@ def load_kp_data(
         )
         month += 1
         if month > 12:
-            month = 0o1
+            month = 1
             year += 1
         t = spiceet("%d-%02d-01T00:00" % (year, month))
 
