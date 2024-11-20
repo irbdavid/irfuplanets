@@ -39,6 +39,8 @@ dependencies = [
     "numpy>=1.20.3,<1.25.0",
     "scipy>=1.7.3",
     "xarray>=0.20.1",
+    "scikit-image>=0.22.0",
+    "spiceypy>=6.0.0",
 ]
 requires-python = ">=3.11"
 
