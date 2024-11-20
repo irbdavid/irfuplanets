@@ -3,7 +3,7 @@ import os.path
 import matplotlib.pylab as plt
 import numpy as np
 import scipy.optimize as opt
-from scipy.integrate import simps, trapz
+from scipy.integrate import simpson, trapezoid
 
 from irfuplanets.time import spiceet
 
@@ -140,7 +140,7 @@ class IonosphericModel(object):
             results[i] = (
                 2.0
                 / speed_of_light_kms
-                * simps(
+                * simpson(
                     1.0 / (1.0 - (fp[inx] / frequencies[i]) ** 2.0) ** 0.5,
                     altitudes[inx],
                 )
@@ -177,7 +177,7 @@ class ChapmanLayer(IonosphericModel):
         )
         dens = self.__call__(alt, theta)
         plt.plot(alt, dens)
-        return trapz(dens, alt)
+        return trapezoid(dens, alt)
 
     def get_params(self):
         return self.n0, self.z0, self.h
