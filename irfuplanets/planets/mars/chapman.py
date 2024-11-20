@@ -79,7 +79,8 @@ class IonosphericModel(object):
         sc_theta=0.0,
         frequency_range=(0.1, 7.5),
         frequency_resolution=0.05,
-        altitude_resolution=0.05,
+        altitude_resolution=1.0,
+        return_full=False,
     ):
         """Compute the appearance of the model in the AIS instrument, by
         propagating rays through it and computing the delay to the reflection
@@ -127,16 +128,44 @@ class IonosphericModel(object):
 
         fp[-1] = 1e99
 
+        return_full_dict = dict()
+        if return_full:
+            return_full_dict = dict(
+                altitudes=altitudes,
+                frequencies=frequencies,
+                fp=fp,
+                traces=dict(),
+            )
+
         for i in range(results.shape[0]):
-            inx = fp[:-1] < frequencies[i]
+            # inx = fp[:-1] < frequencies[i]
+            inx = fp < frequencies[i]
+
             if (~np.any(inx)) or (not inx[0]):
                 continue
+
+            # print(
+            #     frequencies[i], np.max(fp[:-1]), np.sum(~inx), altitudes.shape
+            # )
+
+            # Should only calculate up to fpmax, if it is reached
             (bad_inx,) = np.where(~inx)
-            if bad_inx.shape[0] > 0:
-                inx = inx[0 : bad_inx[0] - 1]  # noqa: W503
+            # print(inx)
+
+            if np.sum(~inx) != 1:
+                if bad_inx.shape[0] > 0:
+                    # inx = inx[0 : bad_inx[0] - 1]  # noqa: W503
+                    # print(bad_inx)
+
+                    # At alts below the first point where fp >= frequencies[i]
+                    # ignore the remainder in the integral
+                    inx[bad_inx[0] :] = False
 
             if inx.shape[0] == 0:
                 continue
+
+            # print(inx, altitudes.shape, fp.shape, frequencies.shape)
+
             results[i] = (
                 2.0
                 / speed_of_light_kms
@@ -145,6 +174,16 @@ class IonosphericModel(object):
                     altitudes[inx],
                 )
             )
+
+            if return_full_dict:
+                return_full_dict["traces"][frequencies[i]] = (
+                    altitudes[inx],
+                    fp[inx],
+                )
+
+            # raise NotImplementedError()
+        if return_full_dict:
+            return results, frequencies, return_full_dict
 
         return results, frequencies
 
@@ -593,4 +632,5 @@ if __name__ == "__main__":
     plt.xlim(1.0, 1e6)
     plt.show()
 
+    # print hh,nn
     # print hh,nn
