@@ -11,6 +11,7 @@ from irfuplanets.planets.mars.boundaries import plot_mpb_model_sza
 from irfuplanets.planets.mars.field_models import (
     CainMarsFieldModel,
     MorschhauserMarsFieldModel,
+    convert_biau_to_bmso,
     create_snapshot,
     plot_lat_lon_field,
 )
@@ -28,4 +29,5 @@ __all__ = [
     "MorschhauserMarsFieldModel",
     "create_snapshot",
     "plot_lat_lon_field",
+    "convert_biau_to_bmso",
 ]
