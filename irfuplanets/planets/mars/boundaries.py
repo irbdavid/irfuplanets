@@ -11,6 +11,60 @@ __license__ = "MIT"
 __email__ = "david.andrews@irfu.se"
 
 
+def plot_mpb(resolution=256, model="vignes00", ax=None, zorder=None, **kwargs):
+    """Plot magnetic pileup boundary
+
+    Parameters
+    ----------
+    resolution : int, optional
+        Number of points in lines, by default 256
+    model : str, optional
+        Model identifier, by default 'vignes00'
+    ax : matplotlib Axes, optional
+        Where to plot, with no setting will default to plt.gca()
+    zorder : _type_, optional
+        _description_, by default None
+
+    Raises
+    ------
+    ValueError
+        _description_
+    """
+    if zorder is None:
+        zorder = -9999
+
+    if ax is None:
+        ax = plt.gca()
+
+    m = model.lower()
+    if m == "vignes00":
+        phi = np.linspace(-np.pi, np.pi, resolution)
+        x = 0.78 + 0.96 * np.cos(phi) / (1 + 0.9 * np.cos(phi))
+        y = 0.96 * np.sin(phi) / (1 + 0.9 * np.cos(phi))
+    else:
+        raise ValueError("Model %s not recognized" % model)
+
+    plt.plot(x, y, zorder=zorder, **kwargs)
+
+
+def plot_bs(resolution=256, model="vignes00", ax=None, zorder=None, **kwargs):
+    if ax is None:
+        ax = plt.gca()
+
+    if zorder is None:
+        zorder = -9999
+
+    m = model.lower()
+    if m == "vignes00":
+        phi = np.linspace(-np.pi, np.pi, resolution)
+        x = 0.64 + 2.04 * np.cos(phi) / (1 + 1.03 * np.cos(phi))
+        y = 2.04 * np.sin(phi) / (1 + 1.03 * np.cos(phi))
+    else:
+        raise ValueError("Model %s not recognized" % model)
+
+    plt.plot(x, y, zorder=zorder, **kwargs)
+
+
 def _hold_xylim(func):
     def wrapped(*args, **kwargs):
         xlim = plt.xlim()
