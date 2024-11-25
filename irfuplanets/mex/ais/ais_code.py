@@ -410,6 +410,14 @@ class AISFileManager(object):
                 self.passman.add_password(
                     None, self.remote_url, username, password
                 )
+            elif "psa" in remote.lower():
+                # self.remote_url = "https://archives.esac.esa.int/psa/ftp
+                # /MARS-EXPRESS/MARSIS/MEX-M-MARSIS-3-RDR-AIS-EXT8-V1.0
+                # /DATA/ACTIVE_IONOSPHERIC_SOUNDER/
+                # RDR2150X/FRM_AIS_RDR_21502.DAT"
+
+                self.remote_url = "https://archives.esac.esa.int/psa/"
+                "ftp/MARS-EXPRESS/MARSIS/"
 
     def get_file(self, time, remote=None, *args, **kwargs):
         if remote is None:
@@ -508,7 +516,8 @@ class AISFileManager(object):
                 print("Orbit %d is known to be empty" % time)
             raise IOError("No data for orbit %d known already" % time)
 
-        if self.remote_url:
+        if "iowa" in self.remote_url:
+            raise IOError("No longer possible to connect to Iowa")
             url = self.remote_url + "RDR%dX/FRM_AIS_RDR_%d.DAT" % (
                 time // 10,
                 time,
@@ -567,6 +576,62 @@ and not overwriting"""
                     f.write(thepage)
                 print("Wrote %s to %s" % (url, temp_f_name))
                 return temp_f_name
+
+        elif "psa" in self.remote.lower():
+            # self.remote_url = "https://archives.esac.esa.int/psa/ftp/
+            # MARS-EXPRESS/MARSIS/MEX-M-MARSIS-3-RDR-AIS-EXT8-V1.0/
+            # DATA/ACTIVE_IONOSPHERIC_SOUNDER/RDR2150X/FRM_AIS_RDR_21502.DAT"
+            # Bastard mission phases, fucking everything up
+            url = self.remote_url + "MEX-M-MARSIS-3-RDR-AIS-"
+            url += mex.mex_mission_phase(time)
+            url += "-V1.0/"
+            url += "DATA/ACTIVE_IONOSPHERIC_SOUNDER/"
+            url += "RDR%dX/FRM_AIS_RDR_%d.DAT" % (
+                time // 10,
+                time,
+            )
+
+            if copy_to_local:
+                fname = self.local + "RDR%dX/FRM_AIS_RDR_%d.DAT" % (
+                    time // 10,
+                    time,
+                )
+
+                if os.path.exists(fname) and not self.overwrite:
+                    if self.verbose:
+                        print(
+                            f"Local file {fname} alread already exists,"
+                            "and not overwriting"
+                        )
+                        raise IOError(f"Something already exists at {fname}")
+
+                local_dir = os.path.dirname(fname)
+                if local_dir and not os.path.exists(local_dir):
+                    if self.verbose:
+                        print("Creating %s" % local_dir)
+                    os.makedirs(local_dir)
+
+            else:
+                local_dir = tempfile.gettempdir()
+
+            try:
+                if self.verbose:
+                    print("Trying %s" % url)
+
+                code = self._wget(url, local=local_dir)
+                if code != 0:
+                    raise IOError(f"{url} -> {local_dir} returned {code}")
+            except IOError as e:
+                raise e
+            #     # if e.code == 404:
+            #     #     with open(self._known_empty_orbits_file, "wb") as f:
+            #     #         self._known_empty_orbits.append(time)
+            #     #         pickle.dump(self._known_empty_orbits, f)
+
+            #     raise IOError("Could not read %s" % url)
+
+            print("Wrote %s to %s" % (url, fname))
+            return fname
         else:
             raise IOError("Remote file access not set up")
 
@@ -584,6 +649,70 @@ and not overwriting"""
                 raise IOError("Empty local file for orbit %d" % time)
 
         raise IOError("No local file found for %d" % time)
+
+    def _wget(
+        self,
+        server,
+        path=None,
+        local=None,
+        verbose=True,
+        cut_dirs=True,
+        test=False,
+        cmd=None,
+        quota=None,
+        reject=None,
+    ):
+        if cmd is None:
+            cmd = "wget -m -nH -nv -np"
+
+        # m = mirror, = -r, -N -l inf --no-remove-listing
+        # nH no host name
+        # nv no verbose
+        # np no parent (don't go outside the requested dir, only within it)
+
+        if cut_dirs:
+            if path is None:
+                s = server
+            else:
+                s = path
+            n = s.count("/")
+
+            if s[-1] == "/":
+                n -= 1
+            cmd += f" --cut-dirs={n}"
+
+        if quota is not None:
+            cmd += f" --quota={quota}"
+
+        if reject is not None:
+            cmd += f" --reject='{reject}'"
+
+        cmd += f" {server}"
+        if path is not None:
+            cmd += f"{path}"
+
+        if local is not None:
+            cmd += f" -P {local}"
+
+        print("WGET COMMAND: " + cmd)
+
+        if test:
+            print(cmd)
+            return
+
+        process = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            shell=True,
+        )
+        std_out, std_err = process.communicate()
+
+        if verbose or (process.returncode != 0):
+            print("WGET: ", std_out.strip(), std_err)
+
+        return process.returncode
 
 
 def read_ais(start, finish=None, input_format=None, verbose=False):
@@ -2197,9 +2326,9 @@ class IonogramDigitization:
         d["traced_frequency"] = self.traced_frequency.tolist()
 
         if hasattr(self, "td_cyclotron_selected_t"):
-            d[
-                "td_cyclotron_selected_t"
-            ] = self.td_cyclotron_selected_t.tolist()
+            d["td_cyclotron_selected_t"] = (
+                self.td_cyclotron_selected_t.tolist()
+            )
 
         return d
 
@@ -2752,7 +2881,7 @@ def write_yearly_ne_b_files(years=None, directory="."):
 
 
 def _sync_ais_data(start=1840, finish=None, outfile=None):
-    fm = AISFileManager(remote="iowa")
+    fm = AISFileManager(remote="psa")
 
     fm.verbose = True
     if finish is None:

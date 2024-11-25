@@ -1353,3 +1353,6 @@ if __name__ == "__main__":
         db = None
 
     ais_tool_instance = AISTool(debug=False, orbit=orbit, digitization_db=db)
+    print("YAAAA")
+    plt.ioff()
+    plt.show()

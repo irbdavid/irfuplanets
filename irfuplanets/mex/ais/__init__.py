@@ -41,7 +41,7 @@ __email__ = "david.andrews@irfu.se"
 
 
 # Create a default instance
-file_manager = AISFileManager(remote="NONE", verbose=True, brain=False)
+file_manager = AISFileManager(remote="PSA", verbose=True, brain=False)
 
 
 __all__ = [

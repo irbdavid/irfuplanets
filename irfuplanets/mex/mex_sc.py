@@ -450,15 +450,28 @@ def mex_mission_phase(time, long_name=False):
 
     # not sure about 7689 - could also be 7669.
     # Seems to be some missing data or sc dead time between extension 2 and 3?
-    starts = [0, 2540, 4800, 7690, 8320]
-    names = ["", "EXT1", "EXT2", "EXT3", "EXT4*"]
+    starts = [0, 2540, 4800, 7695, 11450, 13970, 16470, 21487, 21488]
+    names = [
+        "",
+        "EXT1",
+        "EXT2",
+        "EXT3",
+        "EXT4",
+        "EXT5",
+        "EXT6",
+        "EXT7*",
+        "EXT8",
+    ]
     if long_name:
         names = [
             "PRIME",
             "EXTENSION 1",
             "EXTENSION 2",
             "EXTENSION 3",
-            "EXTENSION 4*",
+            "EXTENSION 5",
+            "EXTENSION 6",
+            "EXTENSION 7*",
+            "EXTENSION 8",
         ]
 
     result = None
