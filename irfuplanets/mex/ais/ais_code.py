@@ -416,8 +416,10 @@ class AISFileManager(object):
                 # /DATA/ACTIVE_IONOSPHERIC_SOUNDER/
                 # RDR2150X/FRM_AIS_RDR_21502.DAT"
 
-                self.remote_url = "https://archives.esac.esa.int/psa/"
-                "ftp/MARS-EXPRESS/MARSIS/DATA/ACTIVE_IONOSPHERIC_SOUNDER/"
+                self.remote_url = (
+                    "https://archives.esac.esa.int/psa/"
+                    "ftp/MARS-EXPRESS/MARSIS/"
+                )
 
     def get_file(self, time, remote=None, *args, **kwargs):
         if remote is None:
@@ -581,7 +583,6 @@ and not overwriting"""
             # self.remote_url = "https://archives.esac.esa.int/psa/ftp/
             # MARS-EXPRESS/MARSIS/MEX-M-MARSIS-3-RDR-AIS-EXT8-V1.0/
             # DATA/ACTIVE_IONOSPHERIC_SOUNDER/RDR2150X/FRM_AIS_RDR_21502.DAT"
-            # Bastard mission phases, fucking everything up
             url = self.remote_url + "MEX-M-MARSIS-3-RDR-AIS-"
             url += mex.mex_mission_phase(time)
             url += "-V1.0/"
@@ -603,7 +604,6 @@ and not overwriting"""
                             f"Local file {fname} alread already exists,"
                             "and not overwriting"
                         )
-                        raise IOError(f"Something already exists at {fname}")
 
                 local_dir = os.path.dirname(fname)
                 if local_dir and not os.path.exists(local_dir):
@@ -689,12 +689,10 @@ and not overwriting"""
 
         cmd += f" {server}"
         if path is not None:
-            cmd += f"{path}"
+            cmd += f" {path}"
 
         if local is not None:
             cmd += f" -P {local}"
-
-        print("WGET COMMAND: " + cmd)
 
         if test:
             print(cmd)
