@@ -417,7 +417,7 @@ class AISFileManager(object):
                 # RDR2150X/FRM_AIS_RDR_21502.DAT"
 
                 self.remote_url = "https://archives.esac.esa.int/psa/"
-                "ftp/MARS-EXPRESS/MARSIS/"
+                "ftp/MARS-EXPRESS/MARSIS/DATA/ACTIVE_IONOSPHERIC_SOUNDER/"
 
     def get_file(self, time, remote=None, *args, **kwargs):
         if remote is None:
