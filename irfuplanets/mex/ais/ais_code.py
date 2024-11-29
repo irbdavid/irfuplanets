@@ -794,56 +794,57 @@ def read_ais_file(file_name, verbose=False, debug=True):
     if not file_name:
         raise IOError("No file name??")
 
-    try:
-        f = open(file_name, "rb")
-        stats = os.stat(file_name)
-        nsweeps = int(stats[stat.ST_SIZE] / ais_fmt_size)
-        tmp_ionogram = None
-        freq_inx = 0
-        last_frequency = 1.0e99
-        # pcount = 0
+    # try:
+    f = open(file_name, "rb")
+    stats = os.stat(file_name)
+    nsweeps = int(stats[stat.ST_SIZE] / ais_fmt_size)
+    tmp_ionogram = None
+    freq_inx = 0
+    last_frequency = 1.0e99
+    # pcount = 0
 
+    if verbose:
+        print(file_name, nsweeps, nsweeps / 160)
+
+    if nsweeps == 0:
         if verbose:
-            print(file_name, nsweeps, nsweeps / 160)
-
-        if nsweeps == 0:
-            if verbose:
-                print("Empty file detected: %s" % file_name)
-            f.close()
-            os.remove(file_name)
-            return []
-
-        for i in range(nsweeps):
-            s = f.read(ais_fmt_size)
-            t = struct.unpack(ais_fmt_short, s)
-            this_frequency = t[36]
-
-            if t[36] <= last_frequency:
-                if tmp_ionogram is not None:
-                    ionogram_list.append(tmp_ionogram)
-                tmp_ionogram = Ionogram()
-                bstr = b"".join(t[5:26])
-                tmp_ionogram.time = spiceet(str(bstr, encoding="utf-8"))
-                freq_inx = 0
-
-            tmp_ionogram.frequencies[freq_inx] = this_frequency
-            tmp_ionogram.data[:, freq_inx] = t[37:]
-            tmp_ionogram.empty = False
-            last_frequency = this_frequency
-            freq_inx = freq_inx + 1
-
-        # Force storing of the last one
-        if ionogram_list[-1].time == tmp_ionogram.time:
-            raise IOError(
-                f"Could not read {file_name}. "
-                "Maybe single frequency observations?"
-            )
-        ionogram_list.append(tmp_ionogram)
-
+            print("Empty file detected: %s" % file_name)
         f.close()
-    except IOError as e:
-        print(e)
+        os.remove(file_name)
         return []
+
+    for i in range(nsweeps):
+        s = f.read(ais_fmt_size)
+        t = struct.unpack(ais_fmt_short, s)
+        this_frequency = t[36]
+
+        if t[36] <= last_frequency:
+            if tmp_ionogram is not None:
+                ionogram_list.append(tmp_ionogram)
+            tmp_ionogram = Ionogram()
+            bstr = b"".join(t[5:26])
+            tmp_ionogram.time = spiceet(str(bstr, encoding="utf-8"))
+            freq_inx = 0
+
+        tmp_ionogram.frequencies[freq_inx] = this_frequency
+        tmp_ionogram.data[:, freq_inx] = t[37:]
+        tmp_ionogram.empty = False
+        last_frequency = this_frequency
+        freq_inx = freq_inx + 1
+
+    # Force storing of the last one
+    if ionogram_list[-1].time == tmp_ionogram.time:
+        # TODO: An example of single freqs: "FRM_AIS_RDR_22106.DAT"
+        raise IOError(
+            f"Could not read {file_name}. "
+            "Maybe single frequency observations?"
+        )
+    ionogram_list.append(tmp_ionogram)
+
+    f.close()
+    # except IOError as e:
+    #     print(e)
+    #     return []
 
     return ionogram_list
 
