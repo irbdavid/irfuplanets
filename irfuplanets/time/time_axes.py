@@ -203,6 +203,9 @@ class SpiceetLocator(Locator):
 
         duration = finish - start
 
+        # For safety checking, throw exception if we hit 50
+        limit = 50
+
         if self._spacing is None:
             best = None
             second_best = None
@@ -248,6 +251,14 @@ class SpiceetLocator(Locator):
         first_tick = start  # + sep/2.
         first = CelsiusTime(first_tick)
 
+        description = (
+            f"{self}: Hit {limit} of number of "
+            f"ticks ["
+            f"{utcstr(start)}, "
+            f"{utcstr(finish)}, {duration}, "
+            f"{self.name}]"
+        )
+
         ticks = []
         if "year" in self.name:
             year = self.multiple * int(first.year / self.multiple)
@@ -256,6 +267,9 @@ class SpiceetLocator(Locator):
                 ticks.append(t)
                 year += self.multiple
                 t = spiceet("%04d-001T00:00:00" % year)
+
+                if len(ticks) > limit:
+                    raise RuntimeError(description)
 
         elif "month" in self.name:
             month = 1
@@ -268,6 +282,9 @@ class SpiceetLocator(Locator):
                     month -= 12
                     year += 1
                 t = spiceet("%04d-%02d-01T00:00:00" % (year, month))
+
+                if len(ticks) > limit:
+                    raise RuntimeError(description)
 
         elif "day" in self.name:
             day = 1
@@ -306,6 +323,9 @@ class SpiceetLocator(Locator):
                     else:
                         t = test.spiceet
 
+                if len(ticks) > limit:
+                    raise RuntimeError(description)
+
         elif "hour" in self.name:
             hour = 0
             day = first.day
@@ -322,6 +342,7 @@ class SpiceetLocator(Locator):
                     "%04d-%02d-%02dT%02d:00:00" % (year, month, day, hour)
                 )
                 if self.calendar and (test.month != month):
+                    year = test.year
                     month = test.month
                     day = 1
                     hour = 0
@@ -330,6 +351,11 @@ class SpiceetLocator(Locator):
                     )
                 else:
                     t = test.spiceet
+
+                # print(test.isod, year, month, day, hour)
+
+                if len(ticks) > limit:
+                    raise RuntimeError(description)
 
         elif "minute" in self.name:
             minute = 0
@@ -365,6 +391,9 @@ class SpiceetLocator(Locator):
                     )
                 else:
                     t = test.spiceet
+
+                if len(ticks) > limit:
+                    raise RuntimeError(description)
 
         elif "second" in self.name:
             # Finally, in seconds, we don't need to care about
