@@ -611,10 +611,11 @@ if __name__ == "__main__":
 
     # inx, = np.where((f > f0) & (f < ne_to_fp(np.max(n))))
     i = np.min(np.where(f > f0)[0])
-    df = np.diff(f)
-    # print df > 0.
-    j = np.min(np.where(df < 0.0)[0])
-    inx = list(range(i, j + 1))
+    # df = np.diff(f)
+    # if np.any(df < 0.0):
+    #     j = np.min(np.where(df < 0.0))
+    #     inx = list(range(i, j + 1))
+    # else:
     (inx,) = np.where((f < ne_to_fp(np.max(n))) & (f > f0))
     print(inx)
 
