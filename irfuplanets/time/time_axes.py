@@ -264,6 +264,13 @@ class SpiceetLocator(Locator):
             year = self.multiple * int(first.year / self.multiple)
             t = spiceet("%04d-001T00:00:00" % year)
             while t <= finish:
+
+                if ticks and (t < ticks[-1]):
+                    raise RuntimeError(
+                        f"Ticks went backwards: "
+                        f"{utcstr(ticks[-1])} > {utcstr(t)}"
+                    )
+
                 ticks.append(t)
                 year += self.multiple
                 t = spiceet("%04d-001T00:00:00" % year)
@@ -276,6 +283,13 @@ class SpiceetLocator(Locator):
             year = first.year
             t = spiceet("%04d-%02d-01T00:00:00" % (year, month))
             while t <= finish:
+
+                if ticks and (t < ticks[-1]):
+                    raise RuntimeError(
+                        f"Ticks went backwards: "
+                        f"{utcstr(ticks[-1])} > {utcstr(t)}"
+                    )
+
                 ticks.append(t)
                 month += self.multiple
                 if month > 11:
@@ -290,19 +304,35 @@ class SpiceetLocator(Locator):
             day = 1
             year = first.year
             month = first.month
-            year = first.year
+
             if self.calendar:
                 t = spiceet("%04d-%02d-%02dT00:00:00" % (year, month, day))
             else:
                 t = spiceet("%04d-001T00:00:00" % year)
+
             day = 0
             while t <= finish:
-                ticks.append(t)
+
+                if ticks and (t < ticks[-1]):
+                    raise RuntimeError(
+                        f"Ticks went backwards: "
+                        f"{utcstr(ticks[-1])} > {utcstr(t)}"
+                    )
+
+                if t >= start:
+                    ticks.append(t)
+
+                # if self.verbose:
+                #     print(">>> ", utcstr(t), year, day)
+
                 day += self.multiple
                 if self.calendar:
                     test = CelsiusTime(
                         "%04d-%02d-%02dT00:00:00" % (year, month, day)
                     )
+                    if test.year != year:
+                        year = test.year
+
                     if test.month != month:
                         month = test.month
                         day = 1
@@ -317,9 +347,9 @@ class SpiceetLocator(Locator):
                     test = CelsiusTime("%04d-%03dT00:00:00" % (year, day))
                     if test.year != year:
                         year += 1
-                        day = 1
+                        # day = 1
                         t = spiceet("%04d-001T00:00:00" % (test.year))
-                        day = 0
+                        day = 0  # to get back in even sync
                     else:
                         t = test.spiceet
 
@@ -333,6 +363,13 @@ class SpiceetLocator(Locator):
             year = first.year
             t = spiceet("%04d-%02d-%02dT%02d:00:00" % (year, month, day, hour))
             while t <= finish:
+
+                if ticks and (t < ticks[-1]):
+                    raise RuntimeError(
+                        f"Ticks went backwards: "
+                        f"{utcstr(ticks[-1])} > {utcstr(t)}"
+                    )
+
                 ticks.append(t)
                 hour += self.multiple
                 if hour > 24:
@@ -369,6 +406,13 @@ class SpiceetLocator(Locator):
             )
 
             while t <= finish:
+
+                if ticks and (t < ticks[-1]):
+                    raise RuntimeError(
+                        f"Ticks went backwards: "
+                        f"{utcstr(ticks[-1])} > {utcstr(t)}"
+                    )
+
                 ticks.append(t)
                 minute += self.multiple
                 if minute > 60:
