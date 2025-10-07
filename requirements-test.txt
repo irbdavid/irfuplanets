@@ -1,19 +1,19 @@
-black
-cdflib
+cdflib>=1.2.3
 ipympl
 ipywidgets
-isort
 jupyterlab
-matplotlib
+matplotlib>=3.8.2
 numpy>=1.26
-pre-commit
+scikit-image
+scipy
+spiceypy
+xarray
+
 
 
 # This requirements are for development and testing only, not for production.
 pytest
 pytest-cov
-scikit-image
-scikit-image
-scipy
-spiceypy
-xarray
+pre-commit
+black
+isort

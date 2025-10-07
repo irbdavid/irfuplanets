@@ -1,12 +1,10 @@
-black
+
 cdflib>=1.2.3
 ipympl
 ipywidgets
-isort
 jupyterlab
 matplotlib>=3.8.2
 numpy>=1.26
-pre-commit
 scikit-image
 scipy
 spiceypy
