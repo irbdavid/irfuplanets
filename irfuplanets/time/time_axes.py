@@ -193,9 +193,7 @@ class SpiceetLocator(Locator):
             ]
             # self.allowed_intervals.insert(0, ('20_days', 86400.*20., 20))
             self.allowed_intervals.insert(0, ("50_days", 86400.0 * 50.0, 50))
-            self.allowed_intervals.insert(
-                0, ("100_days", 86400.0 * 100.0, 100)
-            )
+            self.allowed_intervals.insert(0, ("100_days", 86400.0 * 100.0, 100))
 
     def bin_boundaries(self, start, finish):
         if finish < start:
@@ -231,9 +229,7 @@ class SpiceetLocator(Locator):
                         best = a
                         break
                 else:
-                    raise ValueError(
-                        "Spacing name '%s' not recognized" % self._spacing
-                    )
+                    raise ValueError("Spacing name '%s' not recognized" % self._spacing)
             else:
                 best = self._spacing
 
@@ -264,14 +260,12 @@ class SpiceetLocator(Locator):
             year = self.multiple * int(first.year / self.multiple)
             t = spiceet("%04d-001T00:00:00" % year)
             while t <= finish:
-
                 if ticks and (t < ticks[-1]):
                     raise RuntimeError(
-                        f"Ticks went backwards: "
-                        f"{utcstr(ticks[-1])} > {utcstr(t)}"
+                        f"Ticks went backwards: {utcstr(ticks[-1])} > {utcstr(t)}"
                     )
-
-                ticks.append(t)
+                if t >= start:
+                    ticks.append(t)
                 year += self.multiple
                 t = spiceet("%04d-001T00:00:00" % year)
 
@@ -283,14 +277,13 @@ class SpiceetLocator(Locator):
             year = first.year
             t = spiceet("%04d-%02d-01T00:00:00" % (year, month))
             while t <= finish:
-
                 if ticks and (t < ticks[-1]):
                     raise RuntimeError(
-                        f"Ticks went backwards: "
-                        f"{utcstr(ticks[-1])} > {utcstr(t)}"
+                        f"Ticks went backwards: {utcstr(ticks[-1])} > {utcstr(t)}"
                     )
 
-                ticks.append(t)
+                if t >= start:
+                    ticks.append(t)
                 month += self.multiple
                 if month > 11:
                     month -= 12
@@ -312,11 +305,9 @@ class SpiceetLocator(Locator):
 
             day = 0
             while t <= finish:
-
                 if ticks and (t < ticks[-1]):
                     raise RuntimeError(
-                        f"Ticks went backwards: "
-                        f"{utcstr(ticks[-1])} > {utcstr(t)}"
+                        f"Ticks went backwards: {utcstr(ticks[-1])} > {utcstr(t)}"
                     )
 
                 if t >= start:
@@ -327,9 +318,7 @@ class SpiceetLocator(Locator):
 
                 day += self.multiple
                 if self.calendar:
-                    test = CelsiusTime(
-                        "%04d-%02d-%02dT00:00:00" % (year, month, day)
-                    )
+                    test = CelsiusTime("%04d-%02d-%02dT00:00:00" % (year, month, day))
                     if test.year != year:
                         year = test.year
 
@@ -337,8 +326,7 @@ class SpiceetLocator(Locator):
                         month = test.month
                         day = 1
                         t = spiceet(
-                            "%04d-%02d-%02dT00:00:00"
-                            % (test.year, test.month, day)
+                            "%04d-%02d-%02dT00:00:00" % (test.year, test.month, day)
                         )
                         day = 0  # to get back in even sync
                     else:
@@ -363,14 +351,12 @@ class SpiceetLocator(Locator):
             year = first.year
             t = spiceet("%04d-%02d-%02dT%02d:00:00" % (year, month, day, hour))
             while t <= finish:
-
                 if ticks and (t < ticks[-1]):
                     raise RuntimeError(
-                        f"Ticks went backwards: "
-                        f"{utcstr(ticks[-1])} > {utcstr(t)}"
+                        f"Ticks went backwards: {utcstr(ticks[-1])} > {utcstr(t)}"
                     )
-
-                ticks.append(t)
+                if t >= start:
+                    ticks.append(t)
                 hour += self.multiple
                 if hour > 24:
                     hour -= 24
@@ -383,9 +369,7 @@ class SpiceetLocator(Locator):
                     month = test.month
                     day = 1
                     hour = 0
-                    t = spiceet(
-                        "%04d-%02d-%02dT%02d:00:00" % (year, month, day, hour)
-                    )
+                    t = spiceet("%04d-%02d-%02dT%02d:00:00" % (year, month, day, hour))
                 else:
                     t = test.spiceet
 
@@ -401,19 +385,19 @@ class SpiceetLocator(Locator):
             month = first.month
             year = first.year
             t = spiceet(
-                "%04d-%02d-%02dT%02d:%02d:00"
-                % (year, month, day, hour, minute)
+                "%04d-%02d-%02dT%02d:%02d:00" % (year, month, day, hour, minute)
             )
 
             while t <= finish:
-
                 if ticks and (t < ticks[-1]):
                     raise RuntimeError(
-                        f"Ticks went backwards: "
-                        f"{utcstr(ticks[-1])} > {utcstr(t)}"
+                        f"Ticks went backwards: {utcstr(ticks[-1])} > {utcstr(t)}"
                     )
 
-                ticks.append(t)
+                # Only append if we are in the range
+                if t >= start:
+                    ticks.append(t)
+
                 minute += self.multiple
                 if minute > 60:
                     minute = 0
@@ -422,16 +406,14 @@ class SpiceetLocator(Locator):
                     hour -= 24
                     day += 1
                 test = CelsiusTime(
-                    "%04d-%02d-%02dT%02d:%02d:00"
-                    % (year, month, day, hour, minute)
+                    "%04d-%02d-%02dT%02d:%02d:00" % (year, month, day, hour, minute)
                 )
                 if test.month != month:
                     month = test.month
                     day = 1
                     hour = 0
                     t = spiceet(
-                        "%04d-%02d-%02dT%02d:%02d:00"
-                        % (year, month, day, hour, minute)
+                        "%04d-%02d-%02dT%02d:%02d:00" % (year, month, day, hour, minute)
                     )
                 else:
                     t = test.spiceet
